@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>One Last Thing — RX Fast-Track Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:   #080808;
+      --dark:    #111111;
+      --dark-2:  #171717;
+      --border:  rgba(255,255,255,0.07);
+      --orange:  #fb5000;
+      --orange2: #ff7033;
+      --white:   #FFFFFF;
+      --gray:    #888;
+      --teal:    #00E5C0;
+      --green:   #22c55e;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    .ds-header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(8,8,8,0.95);
+    }
+    .header-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.3rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white);
+    }
+    .header-logo span { color: var(--orange); }
+    .step-badge {
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gray); background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 5px 14px;
+    }
+
+    /* ── MAIN ── */
+    .ds-wrap {
+      max-width: 680px; margin: 0 auto;
+      padding: 52px 24px 80px;
+    }
+
+    /* ── EYEBROW ── */
+    .ds-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); margin-bottom: 18px;
+    }
+    .ds-eyebrow::before {
+      content: ''; display: block; width: 24px; height: 1px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* ── HEADLINE ── */
+    .ds-headline {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3rem); text-transform: uppercase;
+      letter-spacing: 0.03em; line-height: 1.05;
+      margin-bottom: 14px;
+    }
+    .ds-headline .accent { color: var(--orange); }
+    .ds-subhead {
+      font-size: 1rem; color: rgba(255,255,255,0.55);
+      line-height: 1.7; margin-bottom: 36px; max-width: 560px;
+    }
+    .ds-subhead strong { color: var(--white); }
+
+    /* ── PRODUCT CARD ── */
+    .product-card {
+      background: var(--dark-2);
+      border: 1.5px solid rgba(251,80,0,0.2);
+      border-radius: 14px; overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .product-card-header {
+      background: linear-gradient(135deg, rgba(251,80,0,0.1) 0%, rgba(251,80,0,0.03) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 22px 26px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .product-label {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--orange); font-weight: 700; margin-bottom: 5px;
+    }
+    .product-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .product-title span { color: var(--orange); }
+    .price-block { text-align: right; flex-shrink: 0; }
+    .price-was {
+      font-size: 0.82rem; color: rgba(255,255,255,0.3);
+      text-decoration: line-through; display: block;
+    }
+    .price-now {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2.2rem; line-height: 1;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .price-label { font-size: 0.7rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .product-body { padding: 22px 26px; }
+    .body-intro {
+      font-size: 0.92rem; color: rgba(255,255,255,0.55);
+      line-height: 1.65; margin-bottom: 18px;
+    }
+    .body-intro strong { color: rgba(255,255,255,0.8); }
+
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 11px;
+      font-size: 0.92rem; line-height: 1.5; color: rgba(255,255,255,0.75);
+    }
+    .feature-list li .icon {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(0,229,192,0.1); border: 1px solid var(--teal);
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .feature-list li .icon svg { width: 9px; height: 9px; }
+
+    /* ── CTA SECTION ── */
+    .cta-section { text-align: center; }
+
+    .price-summary {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.82rem; color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
+    }
+    .price-summary .regular { text-decoration: line-through; }
+    .price-summary .today {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.2rem; color: var(--orange); letter-spacing: 0.04em;
+    }
+    .price-summary .arrow {
+      font-size: 0.9rem; opacity: 0.4;
+    }
+
+    .btn-yes {
+      display: block; width: 100%;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, var(--orange) 0%, #d94500 100%);
+      border: none; border-radius: 8px; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.3rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--white);
+      position: relative; overflow: hidden;
+      box-shadow: 0 6px 28px rgba(251,80,0,0.35);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      margin-bottom: 12px;
+    }
+    .btn-yes::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: translateX(-100%) skewX(-15deg);
+      transition: transform 0.5s ease;
+    }
+    .btn-yes:hover::before { transform: translateX(200%) skewX(-15deg); }
+    .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(251,80,0,0.5); }
+    .btn-yes:active { transform: translateY(0); }
+    .btn-yes:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-yes .spinner {
+      display: none; width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-yes.loading .btn-yes-text { display: none; }
+    .btn-yes.loading .spinner { display: block; }
+    .btn-yes-text { pointer-events: none; }
+    .btn-yes-sub {
+      font-size: 0.7rem; font-family: 'DM Sans', sans-serif; font-weight: 400;
+      opacity: 0.7; letter-spacing: 0; text-transform: none;
+      margin-top: 2px; display: block;
+    }
+
+    .btn-no {
+      display: inline-block; background: none; border: none; cursor: pointer;
+      font-size: 0.78rem; color: rgba(255,255,255,0.2);
+      text-decoration: underline; text-decoration-color: rgba(255,255,255,0.08);
+      letter-spacing: 0.03em; transition: color 0.2s; padding: 8px 16px;
+    }
+    .btn-no:hover { color: rgba(255,255,255,0.4); }
+
+    #ds-error {
+      display: none; margin-top: 12px;
+      padding: 12px 16px; border-radius: 6px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      font-size: 0.88rem; color: #fca5a5; line-height: 1.5; text-align: left;
+    }
+
+    /* ── FOOTER ── */
+    .ds-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ds-footer p { font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+
+    @media (max-width: 640px) {
+      .ds-header { padding: 14px 20px; }
+      .ds-wrap { padding: 36px 16px 60px; }
+      .product-card-header { flex-direction: column; align-items: flex-start; }
+      .price-block { text-align: left; }
+      .ds-footer { padding: 16px 20px; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="ds-header">
+  <span class="header-logo">WOD <span>BOD</span></span>
+  <span class="step-badge">Almost done — one last thing</span>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="ds-wrap">
+
+  <div class="ds-eyebrow">Before You Go</div>
+
+  <h1 class="ds-headline">
+    Not Ready for the Full Program?<br>
+    <span class="accent">Start With the Blueprint.</span>
+  </h1>
+
+  <p class="ds-subhead">
+    The Double Under Fix handles the rope. But if you want to <strong>RX workouts faster</strong> — not just one skill — this is the shortcut. A focused blueprint that maps out exactly what to train, in what order, to get from "scales everything" to RX as efficiently as possible.
+    <br><br>No fluff. No 12-week commitment. Just the roadmap.
+  </p>
+
+  <!-- Product Card -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <div>
+        <div class="product-label">Existing Product — Special Price</div>
+        <div class="product-title"><span>RX</span> Fast-Track Blueprint</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.35);margin-top:4px;">The RX roadmap — without the full program commitment</div>
+      </div>
+      <div class="price-block">
+        <span class="price-was">$97</span>
+        <div class="price-now">$27</div>
+        <div class="price-label">Today only</div>
+      </div>
+    </div>
+
+    <div class="product-body">
+      <p class="body-intro">
+        This is the <strong>exact framework</strong> used inside WOD BOD — condensed into a blueprint you can start using immediately. It doesn't replace the full program. It gives you the map so you're never guessing what to work on next.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>The RX skill priority ladder — which movements to tackle first for the fastest overall improvement</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Weekly training structure blueprint — how to layer skill work on top of regular CrossFit without burning out</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>The 5 most common "RX blockers" and the fastest fix for each one</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Benchmark WOD strategy cheat sheet — pacing and break-up schemes for Fran, Grace, Cindy, and more</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Instant download — PDF you can reference before any workout, any time</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="price-summary">
+      <span class="regular">Regular $97</span>
+      <span class="arrow">→</span>
+      <span class="today">$27 today</span>
+    </div>
+
+    <button class="btn-yes" id="btn-yes">
+      <div class="btn-yes-text">
+        Yes — Add the Blueprint for $27
+        <span class="btn-yes-sub">One-click charge to your card on file &bull; Instant PDF download</span>
+      </div>
+      <div class="spinner"></div>
+    </button>
+
+    <div id="ds-error"></div>
+
+    <button class="btn-no" id="btn-no">
+      No thanks — I'll figure it out on my own. Take me to my program.
+    </button>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="ds-footer">
+  <p>&copy; 2026 WOD BOD METHOD &bull; wodbodmethod.com</p>
+  <p>Questions? <a href="mailto:support@wodbodmethod.com" style="color:rgba(255,255,255,0.3);text-decoration:none;">support@wodbodmethod.com</a></p>
+</footer>
+
+<script>
+(function() {
+  const purchase = JSON.parse(sessionStorage.getItem('du_purchase') || '{}');
+  const btnYes   = document.getElementById('btn-yes');
+  const btnNo    = document.getElementById('btn-no');
+  const errorDiv = document.getElementById('ds-error');
+
+  function showError(msg) {
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = msg;
+  }
+
+  btnYes.addEventListener('click', async () => {
+    btnYes.disabled = true;
+    btnYes.classList.add('loading');
+    errorDiv.style.display = 'none';
+
+    if (!purchase.customerId || !purchase.paymentMethodId) {
+      showError('Unable to process — no payment method found. Please contact support@wodbodmethod.com.');
+      btnYes.disabled = false;
+      btnYes.classList.remove('loading');
+      return;
+    }
+
+    try {
+      const res = await fetch('/charge-upsell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId:      purchase.customerId,
+          paymentMethodId: purchase.paymentMethodId,
+          product:         'rxBlueprint',
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      purchase.addedRxBlueprint = true;
+      sessionStorage.setItem('du_purchase', JSON.stringify(purchase));
+      window.location.href = '/thank-you';
+    } catch (err) {
+      showError('There was an issue processing your order: ' + err.message + '. Please contact support@wodbodmethod.com.');
+      btnYes.disabled = false;
+      btnYes.classList.remove('loading');
+    }
+  });
+
+  btnNo.addEventListener('click', () => {
+    window.location.href = '/thank-you';
+  });
+})();
+</script>
+
+</body>
+</html>

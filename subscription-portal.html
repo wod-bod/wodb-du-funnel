@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Subscription — WOD BOD Method</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:  #080808;
+      --dark:   #111111;
+      --border: rgba(255,255,255,0.07);
+      --orange: #fb5000;
+      --white:  #FFFFFF;
+      --gray:   #888;
+      --teal:   #00E5C0;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(8,8,8,0.95);
+    }
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.4rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+    }
+    .logo span { color: var(--orange); }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 60px 24px;
+    }
+    .portal-card {
+      width: 100%; max-width: 460px;
+      background: #111;
+      border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden;
+    }
+    .portal-card-header {
+      padding: 32px 36px 28px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(251,80,0,0.04);
+    }
+    .portal-eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 10px; display: block; font-weight: 700;
+    }
+    .portal-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.8rem; letter-spacing: 0.03em; text-transform: uppercase;
+      line-height: 1.1; margin-bottom: 8px;
+    }
+    .portal-desc {
+      font-size: 0.88rem; color: rgba(255,255,255,0.45); line-height: 1.6;
+    }
+
+    .portal-card-body { padding: 28px 36px 36px; }
+
+    /* States */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    /* Loading state */
+    #state-loading {
+      text-align: center; padding: 20px 0;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px; margin: 0 auto 16px;
+      border: 3px solid rgba(251,80,0,0.2);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #state-loading p {
+      font-size: 0.88rem; color: rgba(255,255,255,0.4);
+    }
+
+    /* Email form state */
+    #state-form label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-bottom: 8px;
+    }
+    #state-form input[type="email"] {
+      width: 100%; padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid var(--border); border-radius: 8px;
+      color: var(--white); font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 14px;
+    }
+    #state-form input[type="email"]::placeholder { color: rgba(255,255,255,0.2); }
+    #state-form input[type="email"]:focus { border-color: rgba(251,80,0,0.5); }
+    .btn-portal {
+      width: 100%; padding: 15px 24px;
+      background: linear-gradient(135deg, var(--orange) 0%, #d94500 100%);
+      border: none; border-radius: 8px; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--white);
+      box-shadow: 0 6px 24px rgba(251,80,0,0.35);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+    .btn-portal:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(251,80,0,0.5);
+    }
+    .btn-portal:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Not found state */
+    #state-not-found {
+      text-align: center;
+    }
+    .not-found-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .not-found-icon svg { width: 24px; height: 24px; }
+    #state-not-found h3 {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    #state-not-found p {
+      font-size: 0.88rem; color: rgba(255,255,255,0.45); line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .btn-try-again {
+      background: none; border: 1px solid var(--border); border-radius: 6px;
+      padding: 10px 22px; cursor: pointer;
+      font-size: 0.85rem; color: rgba(255,255,255,0.5);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-try-again:hover { border-color: rgba(251,80,0,0.4); color: var(--white); }
+
+    /* Error message */
+    .error-msg {
+      display: none; margin-top: 10px;
+      padding: 10px 14px; border-radius: 6px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      font-size: 0.84rem; color: #fca5a5; line-height: 1.5;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+    footer p { font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+    footer a { color: rgba(255,255,255,0.3); text-decoration: none; }
+    footer a:hover { color: var(--orange); }
+
+    @media (max-width: 500px) {
+      header { padding: 14px 20px; }
+      .portal-card-header, .portal-card-body { padding-left: 22px; padding-right: 22px; }
+      footer { padding: 16px 20px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="https://wodbodmethod.com" class="logo">WOD <span>BOD</span> METHOD</a>
+</header>
+
+<main>
+  <div class="portal-card">
+    <div class="portal-card-header">
+      <span class="portal-eyebrow">Member Billing</span>
+      <h1 class="portal-title">Manage Your<br>Subscription</h1>
+      <p class="portal-desc">View invoices, update your payment method, or cancel your WOD BOD membership — all in one place.</p>
+    </div>
+    <div class="portal-card-body">
+
+      <!-- Loading (auto-redirect flow) -->
+      <div class="state active" id="state-loading">
+        <div class="loading-spinner"></div>
+        <p>Opening your billing portal&hellip;</p>
+      </div>
+
+      <!-- Email lookup form -->
+      <div class="state" id="state-form">
+        <form id="lookup-form" novalidate>
+          <label for="email-input">Your email address</label>
+          <input type="email" id="email-input" placeholder="you@example.com" autocomplete="email" required />
+          <button type="submit" class="btn-portal" id="btn-lookup">Open Billing Portal</button>
+          <div class="error-msg" id="lookup-error"></div>
+        </form>
+      </div>
+
+      <!-- Not found -->
+      <div class="state" id="state-not-found">
+        <div class="not-found-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+          </svg>
+        </div>
+        <h3>No Account Found</h3>
+        <p>We couldn&rsquo;t find a WOD BOD subscription tied to that email. Double-check the address or reach out to support.</p>
+        <button class="btn-try-again" id="btn-try-again">Try a Different Email</button>
+        <p style="margin-top:14px;">
+          <a href="mailto:support@wodbodmethod.com" style="color:var(--orange);font-size:0.82rem;">support@wodbodmethod.com</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2026 WOD BOD METHOD &bull; wodbodmethod.com</p>
+  <p><a href="mailto:support@wodbodmethod.com">support@wodbodmethod.com</a></p>
+</footer>
+
+<script>
+(function() {
+  function showState(id) {
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Check for ?customer= param — auto-redirect to billing portal
+  const params     = new URLSearchParams(window.location.search);
+  const customerId = params.get('customer');
+
+  if (customerId) {
+    // Auto-redirect — loading state already showing
+    window.location.href = '/billing-portal?customerId=' + encodeURIComponent(customerId);
+    return;
+  }
+
+  // No customer param — show email lookup form
+  showState('state-form');
+
+  const form       = document.getElementById('lookup-form');
+  const emailInput = document.getElementById('email-input');
+  const btnLookup  = document.getElementById('btn-lookup');
+  const errorEl    = document.getElementById('lookup-error');
+
+  function showError(msg) {
+    errorEl.style.display = 'block';
+    errorEl.textContent   = msg;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    errorEl.style.display = 'none';
+    btnLookup.disabled    = true;
+    btnLookup.textContent = 'Looking up…';
+
+    try {
+      const res  = await fetch('/lookup-customer?email=' + encodeURIComponent(email));
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error);
+
+      if (!data.found) {
+        showState('state-not-found');
+        return;
+      }
+
+      // Found — redirect to billing portal
+      showState('state-loading');
+      window.location.href = '/billing-portal?customerId=' + encodeURIComponent(data.customerId);
+
+    } catch (err) {
+      showError('Something went wrong: ' + err.message);
+      btnLookup.disabled    = false;
+      btnLookup.textContent = 'Open Billing Portal';
+    }
+  });
+
+  document.getElementById('btn-try-again').addEventListener('click', () => {
+    showState('state-form');
+    emailInput.value      = '';
+    btnLookup.disabled    = false;
+    btnLookup.textContent = 'Open Billing Portal';
+    emailInput.focus();
+  });
+})();
+</script>
+
+</body>
+</html>

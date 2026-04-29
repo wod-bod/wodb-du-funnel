@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6-Week Double Under Fix — WOD BOD METHOD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:       #080808;
+      --white:       #FFFFFF;
+      --orange:      #fb5000;
+      --orange-2:    #ff7033;
+      --orange-glow: rgba(251,80,0,0.45);
+      --orange-dim:  rgba(251,80,0,0.10);
+      --gray-dark:   #111111;
+      --gray-mid:    #1C1C1C;
+      --gray-text:   #888;
+      --teal:        #00E5C0;
+      --red-x:       #ff3b3b;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,.display {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.03em; line-height: 0.93;
+    }
+
+    /* ── CURSOR GLOW ── */
+    #cursor-glow {
+      pointer-events: none; position: fixed; z-index: 9998;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(251,80,0,0.07) 0%, transparent 65%);
+      transform: translate(-50%,-50%);
+      transition: transform 0.08s linear;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 9997;
+      pointer-events: none; opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 56px;
+      transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    nav.scrolled {
+      padding: 14px 56px;
+      background: rgba(8,8,8,0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(251,80,0,0.12);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none; position: relative;
+    }
+    .nav-logo span { color: var(--orange); }
+    .nav-cta {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif; font-weight: 600;
+      font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+      transition: border-color 0.3s, color 0.3s; cursor: pointer;
+    }
+    .nav-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--orange); transform: translateX(-101%);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .nav-cta span { position: relative; z-index: 1; }
+    .nav-cta:hover::before { transform: translateX(0); }
+    .nav-cta:hover { border-color: var(--orange); }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 130px 24px 90px;
+      overflow: hidden;
+    }
+    #hero-canvas { position: absolute; inset: 0; z-index: 0; }
+    .hero-mesh {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 30%, rgba(251,80,0,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 15% 80%, rgba(255,112,51,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 85% 70%, rgba(251,80,0,0.05) 0%, transparent 55%);
+    }
+    .hero-lines {
+      position: absolute; inset: 0; z-index: 0; opacity: 0.03;
+      background-image: repeating-linear-gradient(
+        -45deg, transparent, transparent 60px,
+        rgba(255,255,255,0.3) 60px, rgba(255,255,255,0.3) 61px
+      );
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 980px; }
+
+    .overline-pill {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 7px 18px;
+      border: 1px solid rgba(251,80,0,0.5);
+      border-radius: 100px;
+      background: rgba(251,80,0,0.08);
+      backdrop-filter: blur(8px);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.82rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 32px;
+      animation: pill-fade-in 0.8s ease forwards;
+    }
+    .overline-pill::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--orange); animation: dot-pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.6); }
+    }
+    @keyframes pill-fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-headline {
+      font-size: clamp(3.2rem, 9.5vw, 8.2rem);
+      line-height: 0.9; margin-bottom: 30px; color: var(--white);
+    }
+    .hero-headline .du-word {
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(251,80,0,0.7));
+      animation: du-glow 2.5s ease-in-out infinite alternate;
+    }
+    @keyframes du-glow {
+      from { filter: drop-shadow(0 0 12px rgba(251,80,0,0.5)); }
+      to   { filter: drop-shadow(0 0 28px rgba(251,80,0,0.9)); }
+    }
+    .hero-headline .word {
+      display: inline-block; margin-right: 0.22em;
+      opacity: 0; transform: translateY(50px) rotateX(-30deg);
+      transition: transform 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease;
+      transform-origin: bottom center;
+    }
+    .hero-headline .word.visible { opacity: 1; transform: translateY(0) rotateX(0deg); }
+
+    .hero-sub {
+      font-size: 1.2rem; line-height: 1.7; color: rgba(255,255,255,0.6);
+      max-width: 600px; margin: 0 auto 48px;
+      opacity: 0; transform: translateY(24px);
+      animation: sub-in 0.8s 1.2s ease forwards;
+    }
+    @keyframes sub-in { to { opacity: 1; transform: translateY(0); } }
+
+    .hero-cta-wrap {
+      opacity: 0; transform: translateY(20px);
+      animation: sub-in 0.8s 1.4s ease forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 20px 44px;
+      background: linear-gradient(135deg, var(--orange) 0%, #d94500 100%);
+      border: none; border-radius: 4px; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.3rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+      position: relative; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(251,80,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+      animation: cta-pulse 2.5s ease-in-out infinite;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+      transform: translateX(-100%) skewX(-15deg);
+      transition: transform 0.5s ease;
+    }
+    .btn-primary:hover::before { transform: translateX(200%) skewX(-15deg); }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(251,80,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+      animation: none;
+    }
+    .btn-primary:active { transform: translateY(-1px); }
+    @keyframes cta-pulse {
+      0%,100% { box-shadow: 0 8px 32px rgba(251,80,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+      50%      { box-shadow: 0 8px 40px rgba(251,80,0,0.6), 0 0 0 8px rgba(251,80,0,0.08), inset 0 1px 0 rgba(255,255,255,0.15); }
+    }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 16px 36px;
+      background: transparent;
+      border: 1.5px solid rgba(251,80,0,0.5); border-radius: 4px; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--orange); text-decoration: none;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .btn-secondary:hover {
+      background: rgba(251,80,0,0.08); border-color: var(--orange); color: var(--white);
+    }
+
+    .social-proof {
+      margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.45);
+      letter-spacing: 0.03em;
+    }
+    .social-proof strong { color: rgba(255,255,255,0.85); }
+    .social-proof .du-inline { color: var(--orange); font-weight: 700; }
+
+    .scroll-hint {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0.3; animation: bounce-down 2s ease-in-out infinite;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #fff;
+    }
+    .scroll-hint svg { width: 20px; height: 20px; }
+    @keyframes bounce-down {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ── MARQUEE TICKER ── */
+    .ticker-wrap {
+      background: var(--orange); padding: 14px 0;
+      overflow: hidden; position: relative; z-index: 3;
+    }
+    .ticker-track {
+      display: flex; gap: 0; white-space: nowrap;
+      animation: ticker-scroll 32s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 28px; padding: 0 28px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 0.95rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.95);
+    }
+    .ticker-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.5); flex-shrink: 0; }
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── PROBLEM SECTION ── */
+    #problem {
+      background: linear-gradient(160deg, #0d0d0d 0%, var(--black) 100%);
+      padding: 100px 56px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      position: relative; overflow: hidden;
+    }
+    #problem::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(circle, rgba(255,59,59,0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .problem-inner { max-width: 1000px; margin: 0 auto; }
+    #problem .section-label {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--red-x); margin-bottom: 14px; display: block;
+    }
+    #problem h2 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem); margin-bottom: 60px;
+      line-height: 1;
+    }
+    #problem h2 .hi { color: var(--orange); }
+    .pain-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 24px; margin-bottom: 64px;
+    }
+    .pain-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,59,59,0.15);
+      border-radius: 10px; padding: 28px 28px 28px 24px;
+      display: flex; align-items: flex-start; gap: 18px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .pain-card:hover {
+      border-color: rgba(255,59,59,0.35);
+      background: rgba(255,59,59,0.04);
+    }
+    .x-icon {
+      flex-shrink: 0; width: 28px; height: 28px;
+      border-radius: 50%; background: rgba(255,59,59,0.12);
+      border: 1.5px solid rgba(255,59,59,0.4);
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+    }
+    .x-icon svg { width: 12px; height: 12px; }
+    .pain-card h4 {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 1.05rem; letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .pain-card p { font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.5); }
+    .problem-transition {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: clamp(1.4rem, 3vw, 2.2rem); text-transform: uppercase;
+      letter-spacing: 0.04em; line-height: 1.2;
+      color: rgba(255,255,255,0.85); text-align: center;
+    }
+    .problem-transition .hi { color: var(--orange); }
+
+    /* ── STORY / CREDIBILITY ── */
+    #story {
+      background: var(--white); color: var(--black);
+      padding: 110px 56px; position: relative; overflow: hidden;
+    }
+    #story::before {
+      content: 'DU'; position: absolute; right: -30px; top: -50px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 28vw; color: rgba(0,0,0,0.03); line-height: 1;
+      pointer-events: none; user-select: none; text-transform: uppercase;
+    }
+    .story-inner { max-width: 1100px; margin: 0 auto; position: relative; }
+    .section-num {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 8rem; line-height: 1; color: rgba(0,0,0,0.05);
+      letter-spacing: -0.04em; display: block; margin-bottom: -24px;
+    }
+    #story h2 {
+      font-size: clamp(2.8rem, 6.5vw, 5rem); color: var(--black); margin-bottom: 52px;
+      position: relative;
+    }
+    #story h2::after {
+      content: ''; display: block; height: 5px; width: 80px; margin-top: 16px;
+      background: linear-gradient(90deg, var(--orange), transparent);
+    }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+    .story-body p {
+      font-size: 1.1rem; line-height: 1.75; color: #2a2a2a; margin-bottom: 20px;
+    }
+    .story-body p strong { color: #000; }
+    .story-body p em { color: var(--orange); font-style: normal; font-weight: 700; }
+    .five-step {
+      margin-top: 36px;
+      border: 2px solid rgba(251,80,0,0.2); border-radius: 10px; overflow: hidden;
+    }
+    .five-step-header {
+      background: rgba(251,80,0,0.07); padding: 16px 24px;
+      border-bottom: 1px solid rgba(251,80,0,0.2);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--orange);
+    }
+    .five-step-list { list-style: none; }
+    .five-step-list li {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 24px; border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 1rem; color: #1a1a1a;
+    }
+    .five-step-list li:last-child { border-bottom: none; }
+    .step-num {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+      background: var(--orange); color: #fff;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+    }
+    .pr-badge {
+      display: inline-flex; align-items: center; gap: 12px; margin-top: 32px;
+      padding: 16px 24px;
+      background: #000; border-radius: 8px;
+      border: 1px solid rgba(251,80,0,0.3);
+    }
+    .pr-badge .pr-num {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 3.5rem; line-height: 1;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .pr-badge .pr-label { font-size: 0.82rem; line-height: 1.4; color: rgba(255,255,255,0.6); }
+    .pr-badge .pr-label strong { color: var(--white); display: block; }
+
+    /* ── STATS ROW ── */
+    #stats {
+      background: var(--black); padding: 70px 56px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 2px; max-width: 900px; margin: 0 auto;
+    }
+    .stat-item {
+      text-align: center; padding: 40px 24px;
+      background: linear-gradient(135deg, #141414 0%, #0f0f0f 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: border-color 0.3s; position: relative;
+    }
+    .stat-item:hover { border-color: rgba(251,80,0,0.3); }
+    .stat-item::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .stat-item:hover::before { opacity: 1; }
+    .stat-num {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 4.5rem; line-height: 1; color: var(--white); display: block;
+    }
+    .stat-num span { color: var(--orange); }
+    .stat-label { font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray-text); margin-top: 8px; }
+
+    /* ── INCLUDED ── */
+    #included {
+      background: linear-gradient(160deg, #0e0e0e 0%, var(--black) 100%);
+      padding: 100px 56px; position: relative; overflow: hidden;
+    }
+    #included::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(251,80,0,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .included-card {
+      max-width: 900px; margin: 0 auto; position: relative; z-index: 1;
+      border-radius: 16px; overflow: hidden;
+      background: linear-gradient(145deg, #161616 0%, #101010 100%);
+      box-shadow:
+        0 40px 100px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(251,80,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .included-header {
+      padding: 40px 52px 36px;
+      background: linear-gradient(135deg, #191919 0%, #111 100%);
+      border-bottom: 1px solid rgba(251,80,0,0.2);
+      position: relative; overflow: hidden;
+    }
+    .included-header::before {
+      content: 'VALUE'; position: absolute; right: 30px; bottom: -24px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 5.5rem; color: rgba(255,255,255,0.025); line-height: 1;
+      user-select: none;
+    }
+    .included-tag { font-size: 0.73rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gray-text); margin-bottom: 6px; display: block; }
+    .included-header h2 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .included-body { padding: 44px 52px 52px; }
+    .included-list { list-style: none; display: flex; flex-direction: column; gap: 0; margin-bottom: 48px; }
+    .included-list li {
+      display: flex; align-items: flex-start; gap: 18px;
+      padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 1.02rem; line-height: 1.55; color: rgba(255,255,255,0.7);
+      transition: color 0.2s, padding-left 0.2s; cursor: default;
+    }
+    .included-list li:hover { color: rgba(255,255,255,0.95); padding-left: 6px; }
+    .included-list li:last-child { border-bottom: none; }
+    .included-list li strong { color: var(--white); }
+    .value-tag {
+      margin-left: auto; flex-shrink: 0;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(251,80,0,0.6); white-space: nowrap;
+    }
+    .check-wrap {
+      flex-shrink: 0; width: 26px; height: 26px; margin-top: 1px;
+      border-radius: 50%; background: rgba(0,229,192,0.1);
+      border: 1.5px solid var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .included-list li:hover .check-wrap {
+      background: rgba(0,229,192,0.18);
+      box-shadow: 0 0 12px rgba(0,229,192,0.3);
+    }
+    .check-wrap svg { width: 12px; height: 12px; }
+    .value-total {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 28px; margin-bottom: 8px;
+      background: rgba(255,255,255,0.025); border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .value-total-label { font-size: 0.82rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray-text); }
+    .value-total-amount {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.6rem; color: rgba(255,255,255,0.3);
+      text-decoration: line-through;
+    }
+    .price-block {
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
+      padding: 36px 40px;
+      border: 1px solid rgba(251,80,0,0.2); border-radius: 10px;
+      background: rgba(251,80,0,0.04); margin-bottom: 36px;
+    }
+    .price-block-left p { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-text); margin-bottom: 4px; }
+    .price-block-left span { font-size: 1rem; color: rgba(255,255,255,0.6); }
+    .price-num {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 6rem; line-height: 1;
+      background: linear-gradient(135deg, var(--orange) 0%, #ff7043 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 4px 16px rgba(251,80,0,0.3));
+    }
+    .guarantee-note {
+      text-align: center; font-size: 0.82rem; color: rgba(255,255,255,0.35);
+      margin-top: 16px; letter-spacing: 0.03em;
+    }
+    .guarantee-note strong { color: rgba(255,255,255,0.6); }
+
+
+    /* ── TESTIMONIALS ── */
+    #testimonials {
+      background: #0a0a0a; padding: 110px 56px;
+      position: relative; overflow: hidden;
+    }
+    #testimonials::before {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        90deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px,
+        transparent 1px, transparent 80px
+      );
+      pointer-events: none;
+    }
+    .section-header { max-width: 1100px; margin: 0 auto 64px; }
+    .section-header .pre-tag {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 12px; display: block;
+    }
+    .section-header h2 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+    .section-header h2 .hi { color: var(--orange); }
+    .section-header p { color: var(--gray-text); font-size: 1.05rem; margin-top: 12px; }
+    .testi-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 20px; max-width: 900px; margin: 0 auto; align-items: start;
+    }
+    .testi-card {
+      background: linear-gradient(145deg, #141414 0%, #0e0e0e 100%);
+      border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.3s, box-shadow 0.4s;
+    }
+    .testi-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: rgba(251,80,0,0.35);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(251,80,0,0.15);
+    }
+    .testi-card:nth-child(even) { margin-top: 32px; }
+    .testi-body { padding: 28px 28px 30px; }
+    .stars { display: flex; gap: 3px; margin-bottom: 12px; }
+    .stars svg { width: 13px; height: 13px; fill: var(--orange); }
+    .quote-icon {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2.8rem; line-height: 0.5; color: var(--orange);
+      margin-bottom: 12px; display: block; opacity: 0.8;
+    }
+    .testi-text { font-size: 0.97rem; line-height: 1.7; color: rgba(255,255,255,0.65); margin-bottom: 20px; }
+    .testi-name {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--white);
+    }
+    .testi-result {
+      display: inline-block; margin-top: 6px;
+      font-size: 0.78rem; letter-spacing: 0.06em;
+      color: var(--teal); text-transform: uppercase; font-weight: 600;
+    }
+
+    /* ── BONUS ── */
+    #bonus {
+      background: var(--white); color: var(--black);
+      padding: 100px 56px; position: relative; overflow: hidden;
+    }
+    #bonus::before {
+      content: 'FREE'; position: absolute; right: -40px; top: -30px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 22vw; color: rgba(0,0,0,0.03); line-height: 1;
+      pointer-events: none; user-select: none;
+    }
+    .bonus-inner { max-width: 900px; margin: 0 auto; position: relative; }
+    .bonus-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; background: var(--orange); border-radius: 100px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--white); margin-bottom: 20px;
+    }
+    #bonus h2 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); color: var(--black); margin-bottom: 8px; }
+    #bonus .bonus-sub { font-size: 1.1rem; color: #444; margin-bottom: 44px; line-height: 1.6; }
+    .bonus-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 48px;
+    }
+    .bonus-item {
+      background: #f7f7f7; border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.06); padding: 20px 18px;
+      transition: border-color 0.2s, transform 0.2s; cursor: default;
+    }
+    .bonus-item:hover { border-color: rgba(251,80,0,0.3); transform: translateY(-3px); }
+    .bonus-item-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: rgba(251,80,0,0.1); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .bonus-item-icon svg { width: 18px; height: 18px; }
+    .bonus-item h4 {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #111; margin-bottom: 4px;
+    }
+    .bonus-item p { font-size: 0.82rem; color: #666; line-height: 1.5; }
+    .bonus-value-note {
+      text-align: center; padding: 20px 28px;
+      background: #000; border-radius: 10px; color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+    }
+    .bonus-value-note strong {
+      color: var(--orange);
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 900;
+    }
+
+
+    /* ── FINAL CTA ── */
+    #final-cta {
+      background: var(--black); padding: 140px 56px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-bg-circle {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(251,80,0,0.12) 0%, transparent 65%);
+      animation: cta-breathe 4s ease-in-out infinite; pointer-events: none;
+    }
+    .cta-bg-circle-2 {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 400px; height: 400px; border-radius: 50%;
+      border: 1px solid rgba(251,80,0,0.08);
+      animation: cta-breathe 4s ease-in-out infinite reverse; pointer-events: none;
+    }
+    .cta-bg-circle-3 {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 900px; height: 900px; border-radius: 50%;
+      border: 1px solid rgba(251,80,0,0.04); pointer-events: none;
+    }
+    @keyframes cta-breathe {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+      50%      { transform: translate(-50%,-50%) scale(1.08); opacity: 0.7; }
+    }
+    #final-cta .pre-tag {
+      font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 20px; display: block; position: relative; z-index: 1;
+    }
+    #final-cta h2 {
+      font-size: clamp(3.5rem, 10vw, 8.5rem);
+      position: relative; z-index: 1; line-height: 0.9; margin-bottom: 48px;
+    }
+    #final-cta h2 .hi {
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 0 24px rgba(251,80,0,0.5));
+    }
+    .final-cta-wrap { position: relative; z-index: 1; }
+    .final-cta-value {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .final-cta-value .val-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: rgba(255,255,255,0.4); letter-spacing: 0.06em;
+    }
+    .final-cta-value .val-item svg { width: 13px; height: 13px; fill: var(--teal); }
+    .guarantee { margin-top: 24px; font-size: 0.88rem; color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+    .guarantee strong { color: rgba(255,255,255,0.6); }
+
+    /* ── FAQ ── */
+    #faq {
+      background: #060606; padding: 100px 56px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .faq-inner { max-width: 780px; margin: 0 auto; }
+    #faq .pre-tag {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 12px; display: block;
+    }
+    #faq h2 { font-size: clamp(2rem, 5vw, 3.6rem); margin-bottom: 52px; }
+    .faq-item {
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .faq-item:first-of-type { border-top: 1px solid rgba(255,255,255,0.06); }
+    .faq-trigger {
+      width: 100%; background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 24px 0; text-align: left;
+      color: var(--white); transition: color 0.2s;
+    }
+    .faq-trigger:hover { color: var(--orange); }
+    .faq-trigger h4 {
+      font-family: 'DM Sans', sans-serif; font-weight: 600;
+      font-size: 1.05rem; line-height: 1.4; color: inherit;
+      text-transform: none; letter-spacing: 0; font-variant: normal;
+    }
+    .faq-chevron {
+      flex-shrink: 0; width: 22px; height: 22px;
+      border: 1.5px solid rgba(255,255,255,0.15); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.35s ease, border-color 0.2s, background 0.2s;
+    }
+    .faq-chevron svg { width: 10px; height: 10px; transition: transform 0.35s ease; }
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg); border-color: rgba(251,80,0,0.5);
+      background: rgba(251,80,0,0.08);
+    }
+    .faq-item.open .faq-trigger { color: var(--orange); }
+    .faq-answer {
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease;
+      opacity: 0;
+    }
+    .faq-item.open .faq-answer { max-height: 300px; opacity: 1; }
+    .faq-answer p {
+      padding-bottom: 24px; font-size: 0.97rem; line-height: 1.75;
+      color: rgba(255,255,255,0.55); padding-right: 40px;
+    }
+    .faq-answer p strong { color: rgba(255,255,255,0.85); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #050505;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 36px 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.15rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+    }
+    .footer-logo span { color: var(--orange); }
+    footer p { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+    footer a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--orange); }
+
+    /* ── THIS VS THAT ── */
+    #comparison {
+      background: var(--black); padding: 100px 56px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      position: relative; overflow: hidden;
+    }
+    .comparison-inner { max-width: 1100px; margin: 0 auto; }
+    .comparison-header { text-align: center; margin-bottom: 60px; }
+    .comparison-header .section-label {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 12px; display: block;
+    }
+    .comparison-header h2 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+    .comparison-header h2 .hi { color: var(--orange); }
+    .comparison-grid {
+      display: grid; grid-template-columns: 1fr 72px 1fr;
+      gap: 0; align-items: start;
+    }
+    .comp-panel {
+      padding: 36px 40px; border-radius: 12px; overflow: hidden;
+    }
+    .comp-panel-bad {
+      background: rgba(255,59,59,0.04);
+      border: 1px solid rgba(255,59,59,0.15);
+    }
+    .comp-panel-good {
+      background: rgba(0,229,192,0.03);
+      border: 1px solid rgba(0,229,192,0.15);
+    }
+    .comp-panel-label {
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      margin-bottom: 10px; display: block; font-weight: 700;
+    }
+    .comp-panel-bad .comp-panel-label { color: var(--red-x); }
+    .comp-panel-good .comp-panel-label { color: var(--teal); }
+    .comp-panel-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.4rem; letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .comp-panel-bad .comp-panel-title { color: rgba(255,255,255,0.65); }
+    .comp-panel-good .comp-panel-title { color: var(--white); }
+    .comp-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.97rem; line-height: 1.55;
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+    .comp-row:last-child { border-bottom: none; }
+    .comp-row.row-visible { opacity: 1; transform: translateY(0); }
+    .comp-panel-bad .comp-row { color: rgba(255,255,255,0.48); }
+    .comp-panel-good .comp-row { color: rgba(255,255,255,0.75); }
+    .comp-icon {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+    }
+    .comp-icon-bad { background: rgba(255,59,59,0.12); border: 1.5px solid rgba(255,59,59,0.4); }
+    .comp-icon-good { background: rgba(0,229,192,0.1); border: 1.5px solid rgba(0,229,192,0.5); }
+    .comp-icon svg { width: 10px; height: 10px; }
+    .comp-vs {
+      display: flex; align-items: flex-start; justify-content: center;
+      padding-top: 90px;
+    }
+    .comp-vs-badge {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--gray-dark); border: 2px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── CINEMATIC TESTIMONIAL CAROUSEL ── */
+    .testi-carousel { max-width: 780px; margin: 0 auto; position: relative; }
+    .testi-carousel-track { position: relative; }
+    .testi-slide {
+      opacity: 0; position: absolute; inset: 0;
+      transition: opacity 0.7s ease; pointer-events: none;
+      display: flex; flex-direction: column; justify-content: flex-start;
+    }
+    .testi-slide.active {
+      opacity: 1; position: relative;
+      pointer-events: auto;
+    }
+    .testi-big-quote {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 7rem; line-height: 0.5;
+      color: rgba(251,80,0,0.1); display: block;
+      margin-bottom: 4px; user-select: none;
+    }
+    .testi-quote-text {
+      font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.8;
+      color: rgba(255,255,255,0.82); margin-bottom: 32px;
+      min-height: 80px;
+    }
+    .testi-quote-text .tword {
+      display: inline-block;
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .testi-quote-text .tword.tw-visible { opacity: 1; transform: translateY(0); }
+    .testi-attribution { display: flex; align-items: center; gap: 16px; }
+    .testi-attr-line {
+      width: 36px; height: 2px; flex-shrink: 0;
+      background: linear-gradient(90deg, var(--orange), transparent);
+    }
+    .testi-attr-name {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.05rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--white);
+    }
+    .testi-attr-result {
+      font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600;
+    }
+    .testi-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 36px;
+    }
+    .testi-dots { display: flex; gap: 8px; align-items: center; }
+    .testi-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: none; cursor: pointer; padding: 0;
+      transition: background 0.3s, width 0.3s, border-radius 0.3s;
+    }
+    .testi-dot.active { background: var(--orange); width: 24px; border-radius: 4px; }
+    .testi-arrows { display: flex; gap: 10px; }
+    .testi-arrow {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: rgba(255,255,255,0.45);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .testi-arrow:hover {
+      background: rgba(251,80,0,0.12); border-color: rgba(251,80,0,0.4);
+      color: var(--orange);
+    }
+    .testi-arrow svg { width: 14px; height: 14px; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22,1,0.36,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22,1,0.36,1); }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22,1,0.36,1); }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+    .reveal-scale { opacity: 0; transform: scale(0.94); transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22,1,0.36,1); }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+    .d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; } .d4 { transition-delay: 0.4s; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      nav, nav.scrolled { padding: 16px 20px; }
+      #hero { padding: 110px 20px 70px; }
+      #problem, #comparison, #story, #stats, #included, #testimonials, #bonus, #final-cta, #faq { padding-left: 20px; padding-right: 20px; }
+      .comparison-grid { grid-template-columns: 1fr; gap: 0; }
+      .comp-vs { display: none; }
+      .comp-panel-good { order: -1; margin-bottom: 12px; }
+      .comp-panel-bad { order: 1; }
+      footer { padding: 24px 20px; flex-direction: column; text-align: center; gap: 10px; }
+      .two-col { grid-template-columns: 1fr; gap: 36px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .testi-card:nth-child(n) { margin-top: 0; }
+      .stats-grid { grid-template-columns: 1fr; gap: 1px; }
+      .price-block { grid-template-columns: 1fr; text-align: center; gap: 16px; }
+      .included-header, .included-body { padding-left: 24px; padding-right: 24px; }
+      .bonus-grid { grid-template-columns: 1fr; }
+      .section-num { font-size: 5rem; }
+    }
+    @media (max-width: 480px) {
+      .btn-primary { padding: 16px 22px; font-size: 1.1rem; }
+      .hero-sub { font-size: 1rem; }
+      .price-num { font-size: 4.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR GLOW -->
+<div id="cursor-glow"></div>
+
+<!-- ════════════════════════════════════════
+     NAV
+════════════════════════════════════════ -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo">WOD <span>BOD</span></a>
+  <a href="/checkout" class="nav-cta"><span>Get Instant Access &mdash; $37</span></a>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-mesh"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+
+    <div class="overline-pill">6-Week Program &middot; $37 One-Time</div>
+
+    <h1 class="hero-headline" id="hero-headline" aria-label="Stop Tripping. Start Flying. Master Double Unders.">
+      <!-- populated by JS -->
+    </h1>
+
+    <p class="hero-sub">
+      The exact 5-step system that took Spencer from <strong>frustrated and flogged</strong> to <strong>353 unbroken reps</strong>&nbsp;&mdash;
+      now packaged into a complete step-by-step program you can go through at your own pace.
+    </p>
+
+    <div class="hero-cta-wrap">
+      <a href="/checkout" class="btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Yes! Fix My Double Unders [$37]
+      </a>
+      <p class="social-proof">Join <strong>200+ athletes</strong> who finally got their <span class="du-inline">double unders</span></p>
+    </div>
+
+  </div>
+  <div class="scroll-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    Scroll
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     MARQUEE TICKER
+════════════════════════════════════════ -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker"><!-- populated by JS --></div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PROBLEM SECTION
+════════════════════════════════════════ -->
+<section id="problem">
+  <div class="problem-inner">
+    <span class="section-label">Sound Familiar?</span>
+    <h2 class="reveal">STILL TRIPPING OVER<br /><span class="hi">YOUR OWN ROPE?</span></h2>
+
+    <div class="pain-grid">
+      <div class="pain-card reveal d1">
+        <div class="x-icon">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 2L10 10M10 2L2 10" stroke="#ff3b3b" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h4>You&rsquo;ve tried every cue on YouTube</h4>
+          <p>&ldquo;Relax your wrists.&rdquo; &ldquo;Jump higher.&rdquo; &ldquo;Use your wrists more.&rdquo; Nothing sticks because cues without context don&rsquo;t build skill.</p>
+        </div>
+      </div>
+      <div class="pain-card reveal d2">
+        <div class="x-icon">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 2L10 10M10 2L2 10" stroke="#ff3b3b" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h4>You practice every day but progress stalls</h4>
+          <p>More reps of bad technique just locks in bad habits deeper. Without a structured progression you&rsquo;re spinning your wheels.</p>
+        </div>
+      </div>
+      <div class="pain-card reveal d3">
+        <div class="x-icon">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 2L10 10M10 2L2 10" stroke="#ff3b3b" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h4>Your calves and shins are taking a beating</h4>
+          <p>Shin splints and Achilles soreness aren&rsquo;t just bad luck &mdash; they&rsquo;re technical inefficiency showing up as injury. That&rsquo;s fixable.</p>
+        </div>
+      </div>
+      <div class="pain-card reveal d4">
+        <div class="x-icon">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 2L10 10M10 2L2 10" stroke="#ff3b3b" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h4>DUs derail your entire WOD</h4>
+          <p>One missed rep and the whole set is gone. The mental game is as broken as the physical one, and confidence tanks mid-workout.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="problem-transition reveal">
+      The problem isn&rsquo;t your fitness.<br />
+      It&rsquo;s that nobody ever gave you <span class="hi">the actual system.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     THIS VS THAT COMPARISON
+════════════════════════════════════════ -->
+<section id="comparison">
+  <div class="comparison-inner">
+    <div class="comparison-header">
+      <span class="section-label reveal">This Changes Everything</span>
+      <h2 class="reveal d1">Why <span class="hi">This</span> Works<br />When Nothing Else Did</h2>
+    </div>
+    <div class="comparison-grid reveal-scale">
+      <!-- Left: bad -->
+      <div class="comp-panel comp-panel-bad">
+        <span class="comp-panel-label">The Old Way</span>
+        <p class="comp-panel-title">The YouTube Rabbit Hole</p>
+        <div class="comp-row" style="transition-delay:0.00s">
+          <span class="comp-icon comp-icon-bad"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#ff3b3b" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          20 different coaches, 20 different cues
+        </div>
+        <div class="comp-row" style="transition-delay:0.08s">
+          <span class="comp-icon comp-icon-bad"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#ff3b3b" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          Tips that work for someone else&rsquo;s body
+        </div>
+        <div class="comp-row" style="transition-delay:0.16s">
+          <span class="comp-icon comp-icon-bad"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#ff3b3b" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          No structured progression &mdash; just reps
+        </div>
+        <div class="comp-row" style="transition-delay:0.24s">
+          <span class="comp-icon comp-icon-bad"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#ff3b3b" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          You plateau after your first 10 unbroken
+        </div>
+        <div class="comp-row" style="transition-delay:0.32s">
+          <span class="comp-icon comp-icon-bad"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#ff3b3b" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          Still tripping at the worst possible moment
+        </div>
+      </div>
+
+      <!-- VS badge -->
+      <div class="comp-vs">
+        <div class="comp-vs-badge">VS</div>
+      </div>
+
+      <!-- Right: good -->
+      <div class="comp-panel comp-panel-good">
+        <span class="comp-panel-label">The Fix</span>
+        <p class="comp-panel-title">6-Week Double Under Fix</p>
+        <div class="comp-row" style="transition-delay:0.04s">
+          <span class="comp-icon comp-icon-good"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="#00E5C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          One proven system from a single coach
+        </div>
+        <div class="comp-row" style="transition-delay:0.12s">
+          <span class="comp-icon comp-icon-good"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="#00E5C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Fault identification built around YOUR mechanics
+        </div>
+        <div class="comp-row" style="transition-delay:0.20s">
+          <span class="comp-icon comp-icon-good"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="#00E5C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          6-step progression with clear milestones
+        </div>
+        <div class="comp-row" style="transition-delay:0.28s">
+          <span class="comp-icon comp-icon-good"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="#00E5C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          A path to 100+ unbroken, not just 10
+        </div>
+        <div class="comp-row" style="transition-delay:0.36s">
+          <span class="comp-icon comp-icon-good"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="#00E5C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          RX in WODs without thinking about your rope
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     STORY / CREDIBILITY
+════════════════════════════════════════ -->
+<section id="story">
+  <div class="story-inner">
+    <span class="section-num">01</span>
+    <h2 class="reveal">I Was Right<br />Where You Are</h2>
+    <div class="two-col">
+      <div class="story-body reveal-left">
+        <p>
+          I used to dread seeing double unders on the whiteboard. I&rsquo;d practice daily, rope mark my legs, and still trip up at rep 3 or 4 during a WOD. Every cue I tried worked for a day, then vanished.
+        </p>
+        <p>
+          So I went deep on the mechanics. I filmed myself, broke down the movement from the ground up, and built a repeatable model around <em>what actually matters</em> &mdash; not what sounds good in a motivational video.
+        </p>
+        <p>
+          The result? A <strong>353 unbroken rep personal record</strong> and a clear, teachable progression that&rsquo;s helped over 200 athletes go from &ldquo;maybe two in a row&rdquo; to stringing sets easily.
+        </p>
+        <p>
+          The <strong>6-Week Double Under Fix</strong> is that system, broken into weekly lessons you can follow without any guesswork.
+        </p>
+
+        <div class="five-step">
+          <div class="five-step-header">The 5-Step Double Under Model</div>
+          <ul class="five-step-list">
+            <li><span class="step-num">1</span> Rope selection &amp; setup that matches your body</li>
+            <li><span class="step-num">2</span> Technique breakdown &amp; fault identification</li>
+            <li><span class="step-num">3</span> Common fault correction (video guided)</li>
+            <li><span class="step-num">4</span> 6-step progression: 0 to 20+ unbroken reps</li>
+            <li><span class="step-num">5</span> 30-day challenge: 20 to 100+ unbroken</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reveal-right">
+        <div class="pr-badge">
+          <div class="pr-num">353</div>
+          <div class="pr-label">
+            <strong>Unbroken Reps</strong>
+            Spencer&rsquo;s personal record &mdash; built using<br />the exact system inside this course
+          </div>
+        </div>
+
+        <div style="margin-top: 36px; padding: 32px 28px; background: #f7f7f7; border-radius: 10px; border: 1px solid rgba(0,0,0,0.07);">
+          <p style="font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:#999; margin-bottom:14px;">Student Result</p>
+          <blockquote style="font-size:1.05rem; line-height:1.7; color:#222; margin-bottom:16px; font-style:italic;">
+            &ldquo;Lesson 1 alone took me from 2 double unders to 12 in a single day. I couldn&rsquo;t believe one session could make that much difference.&rdquo;
+          </blockquote>
+          <p style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.9rem; letter-spacing:0.1em; text-transform:uppercase; color:#111;">Steve</p>
+          <p style="font-size:0.78rem; color:var(--orange); font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">2 &rarr; 12 reps in one session</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     STATS BAR
+════════════════════════════════════════ -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-item reveal">
+      <span class="stat-num"><span class="counter" data-target="200">0</span><span>+</span></span>
+      <p class="stat-label">Athletes Trained</p>
+    </div>
+    <div class="stat-item reveal d2">
+      <span class="stat-num"><span class="counter" data-target="353">0</span></span>
+      <p class="stat-label">Unbroken PR</p>
+    </div>
+    <div class="stat-item reveal d3">
+      <span class="stat-num"><span>30</span></span>
+      <p class="stat-label">Day Challenge Included</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     WHAT'S INCLUDED
+════════════════════════════════════════ -->
+<section id="included">
+  <div class="included-card reveal-scale">
+    <div class="included-header">
+      <span class="included-tag">Everything Inside the Course</span>
+      <h2>What&rsquo;s Included</h2>
+    </div>
+    <div class="included-body">
+      <ul class="included-list">
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Full technique breakdown</strong> &mdash; methodical video lessons that eliminate wasted practice and build the right motor patterns from day one</span>
+          <span class="value-tag">$299 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Common fault identification &amp; fix library</strong> &mdash; identify exactly what&rsquo;s broken in your movement and the specific drill to fix it</span>
+          <span class="value-tag">$99 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>6-step progression system</strong> &mdash; structured from 0 to 20+ unbroken reps with clear benchmarks so you always know what to work on next</span>
+          <span class="value-tag">$99 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>DU on auto-pilot + 30-day challenge</strong> &mdash; once you hit 20, this module takes you to 100+ unbroken through a structured 30-day challenge with rhythm and pacing drills</span>
+          <span class="value-tag">$99 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Interference Method program</strong> &mdash; 3 separate tracks to follow based on what makes your dubs fall apart: arm fatigue, leg fatigue, or both</span>
+          <span class="value-tag">$99 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Video warm-up &amp; cool-down routines</strong> &mdash; prep your body correctly to maximize every practice session and reduce risk of injury</span>
+          <span class="value-tag">$99 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Injury prevention PDF</strong> &mdash; addresses the root cause of shin splints and Achilles soreness so you can train pain-free</span>
+          <span class="value-tag">$49 value</span>
+        </li>
+        <li>
+          <span class="check-wrap"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#00E5C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Jump rope selection guide</strong> &mdash; the exact rope specs that match your height and jump style, so you&rsquo;re not fighting your equipment</span>
+          <span class="value-tag">$29 value</span>
+        </li>
+      </ul>
+
+      <div class="value-total">
+        <span class="value-total-label">Total value</span>
+        <span class="value-total-amount">$872</span>
+      </div>
+
+      <div class="price-block">
+        <div class="price-block-left">
+          <p>Your Investment Today</p>
+          <span>One-time payment &bull; Instant access &bull; No subscription</span>
+        </div>
+        <div class="price-num">$37</div>
+      </div>
+
+      <div style="text-align:center;">
+        <a href="/checkout" class="btn-primary" style="font-size:1.4rem; padding:22px 48px;">
+          I Want to Fix My Double Unders!
+        </a>
+        <p class="guarantee-note">Secure checkout via Circle &bull; Instant access after purchase</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     TESTIMONIALS
+════════════════════════════════════════ -->
+<section id="testimonials">
+  <div class="section-header reveal">
+    <span class="pre-tag">Real Athletes &middot; Real Results</span>
+    <h2>From Tripping to <span class="hi">Unbroken.</span></h2>
+    <p>Here&rsquo;s what happens when the right system meets the right athlete.</p>
+  </div>
+  <div class="testi-carousel reveal">
+    <div class="testi-carousel-track" id="testi-track">
+      <!-- slides populated by JS -->
+    </div>
+    <div class="testi-nav">
+      <div class="testi-dots" id="testi-dots"></div>
+      <div class="testi-arrows">
+        <button class="testi-arrow" id="testi-prev" aria-label="Previous testimonial">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>
+        </button>
+        <button class="testi-arrow" id="testi-next" aria-label="Next testimonial">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ════════════════════════════════════════
+     FINAL CTA
+════════════════════════════════════════ -->
+<section id="final-cta">
+  <div class="cta-bg-circle"></div>
+  <div class="cta-bg-circle-2"></div>
+  <div class="cta-bg-circle-3"></div>
+  <span class="pre-tag reveal">WOD BOD METHOD &middot; 6-WEEK DOUBLE UNDER FIX</span>
+  <h2 class="reveal d1">READY TO<br /><span class="hi">FIX YOUR DUs?</span></h2>
+  <div class="final-cta-wrap reveal d2">
+    <div class="final-cta-value">
+      <span class="val-item"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>$872 in value</span>
+      <span class="val-item"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>Instant access</span>
+      <span class="val-item"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>One-time payment</span>
+      <span class="val-item"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>30-day challenge included</span>
+    </div>
+    <a href="/checkout" class="btn-primary" style="font-size:1.5rem; padding:24px 56px;">
+      Fix My Double Unders Now [$37]
+    </a>
+    <p class="guarantee">One-time payment &bull; Secure checkout &bull; <strong>Instant access after purchase</strong></p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FAQ
+════════════════════════════════════════ -->
+<section id="faq">
+  <div class="faq-inner">
+    <span class="pre-tag">Got Questions?</span>
+    <h2 class="reveal">Frequently Asked</h2>
+
+    <div class="faq-item reveal d1">
+      <button class="faq-trigger" aria-expanded="false">
+        <h4>Do I need a specific jump rope to use this program?</h4>
+        <span class="faq-chevron"><svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-answer" role="region">
+        <p>Not at all &mdash; the jump rope selection guide inside the course walks you through exactly what to look for based on your height and jump style. If you already own a rope, we&rsquo;ll assess whether it&rsquo;s working <strong>for</strong> you or against you.</p>
+      </div>
+    </div>
+
+    <div class="faq-item reveal d2">
+      <button class="faq-trigger" aria-expanded="false">
+        <h4>What if I have zero double unders right now?</h4>
+        <span class="faq-chevron"><svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-answer" role="region">
+        <p>This program starts from <strong>zero</strong>. The 6-step progression is built specifically to take you from no double unders to 20+ unbroken reps, then from 20 to 100+ with the auto-pilot module. Wherever you&rsquo;re starting, there&rsquo;s a clear entry point for you.</p>
+      </div>
+    </div>
+
+    <div class="faq-item reveal d3">
+      <button class="faq-trigger" aria-expanded="false">
+        <h4>How long are the video lessons?</h4>
+        <span class="faq-chevron"><svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-answer" role="region">
+        <p>Each lesson is concise and focused &mdash; designed to watch, absorb, and immediately apply. <strong>You should be able to watch a lesson and implement it in the same practice session.</strong> No hour-long theory videos, just clear instruction you can act on that day.</p>
+      </div>
+    </div>
+
+    <div class="faq-item reveal d1">
+      <button class="faq-trigger" aria-expanded="false">
+        <h4>Will this work if I&rsquo;ve tried other DU programs before?</h4>
+        <span class="faq-chevron"><svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-answer" role="region">
+        <p>Most DU content online gives you cues without context. This program is different because it starts with a <strong>fault identification process</strong> &mdash; you find out exactly what&rsquo;s broken in your specific movement before you do a single rep. Students who&rsquo;ve tried everything before consistently say this is the approach that finally clicked.</p>
+      </div>
+    </div>
+
+    <div class="faq-item reveal d2">
+      <button class="faq-trigger" aria-expanded="false">
+        <h4>What if my shins or Achilles are already bothering me?</h4>
+        <span class="faq-chevron"><svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-answer" role="region">
+        <p>The injury prevention PDF inside the course addresses both shin splints and Achilles issues directly. These problems almost always stem from <strong>technical inefficiency</strong>, not fitness. Once you fix the movement, the pain typically resolves. That said, if you&rsquo;re experiencing acute pain, please consult a physio before starting any jumping program.</p>
+      </div>
+    </div>
+
+    <div class="faq-item reveal d3">
+      <button class="faq-trigger" aria-expanded="false">
+        <h4>What&rsquo;s the difference between this and just watching YouTube?</h4>
+        <span class="faq-chevron"><svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="faq-answer" role="region">
+        <p>YouTube gives you individual cues in no particular order with no context for where you are in your progression. This course gives you a <strong>complete system</strong>: fault identification &rarr; targeted drill &rarr; structured progression &rarr; benchmark tracking. You always know what to do next, and why. That&rsquo;s the difference between random practice and deliberate progress.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer>
+  <a href="#" class="footer-logo">WOD <span>BOD</span> METHOD</a>
+  <p>&copy; 2026 WOD BOD METHOD. All rights reserved. &bull; <a href="https://wodbodmethod.com">wodbodmethod.com</a></p>
+</footer>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+  // ── CURSOR GLOW ──
+  const cursorGlow = document.getElementById('cursor-glow');
+  document.addEventListener('mousemove', e => {
+    cursorGlow.style.left = e.clientX + 'px';
+    cursorGlow.style.top  = e.clientY + 'px';
+  });
+
+  // ── NAV SCROLL ──
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  // ── HERO CANVAS PARTICLES ──
+  (function() {
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width  = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const COLORS = ['rgba(251,80,0,', 'rgba(255,112,51,', 'rgba(255,140,0,'];
+
+    function Particle() {
+      this.reset = function() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = -(Math.random() * 0.6 + 0.2);
+        this.r = Math.random() * 1.8 + 0.4;
+        this.alpha = Math.random() * 0.5 + 0.1;
+        this.life = 0;
+        this.maxLife = Math.random() * 220 + 80;
+        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      };
+      this.reset();
+      this.life = Math.random() * this.maxLife;
+    }
+
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        p.life++;
+        if (p.life > p.maxLife) p.reset();
+        const progress = p.life / p.maxLife;
+        const fade = progress < 0.15 ? progress / 0.15 : progress > 0.75 ? (1 - progress) / 0.25 : 1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + (p.alpha * fade) + ')';
+        ctx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ── HERO HEADLINE WORD-BY-WORD ──
+  const headlineWords = [
+    { text: 'Stop', highlight: false },
+    { text: 'Tripping.', highlight: false },
+    { text: 'Start', highlight: false },
+    { text: 'Flying.', highlight: true },
+    { text: 'Master', highlight: false },
+    { text: 'Double', highlight: false },
+    { text: 'Unders.', highlight: true },
+  ];
+  const headline = document.getElementById('hero-headline');
+  headlineWords.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'word';
+    span.innerHTML = w.highlight ? `<span class="du-word">${w.text}</span>` : w.text;
+    span.style.transitionDelay = `${0.07 * i + 0.2}s`;
+    headline.appendChild(span);
+  });
+  requestAnimationFrame(() => {
+    headline.style.opacity = '1';
+    setTimeout(() => {
+      headline.querySelectorAll('.word').forEach(w => w.classList.add('visible'));
+    }, 80);
+  });
+
+  // ── MARQUEE TICKER ──
+  const tickerItems = [
+    'Double Unders',
+    '353 Unbroken',
+    '6 Weeks',
+    'Step-by-Step',
+    '$37 One-Time',
+    'Instant Access',
+    '200+ Athletes',
+    'No Guesswork',
+    'Fix Your DUs',
+    'Built by Spencer',
+  ];
+  const track = document.getElementById('ticker');
+  [0, 1].forEach(() => {
+    tickerItems.forEach(item => {
+      const el = document.createElement('span');
+      el.className = 'ticker-item';
+      el.innerHTML = `<span class="ticker-dot"></span>${item}`;
+      track.appendChild(el);
+    });
+  });
+
+  // ── SCROLL REVEAL ──
+  const revealClasses = ['.reveal', '.reveal-left', '.reveal-right', '.reveal-scale'];
+  const allReveal = document.querySelectorAll(revealClasses.join(','));
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+  allReveal.forEach(el => observer.observe(el));
+
+  // ── COUNTER ANIMATION ──
+  const counters = document.querySelectorAll('.counter');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.target);
+      const duration = 1400;
+      const start = performance.now();
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(ease * target);
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(update);
+      counterObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => counterObserver.observe(c));
+
+  // ── COMPARISON ROW STAGGER ──
+  (function() {
+    const compSection = document.getElementById('comparison');
+    if (!compSection) return;
+    const compRows = compSection.querySelectorAll('.comp-row');
+    const compObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          compRows.forEach(row => row.classList.add('row-visible'));
+          compObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    compObs.observe(compSection);
+  })();
+
+  // ── CINEMATIC TESTIMONIAL CAROUSEL ──
+  (function() {
+    const testimonials = [
+      {
+        quote: "Lesson 1 took me from 2 to 12 double unders in 1 day. I was so excited. If you are debating on getting this course, don’t debate anymore, it’s worth it.",
+        name: "Steve",
+        result: "2 → 12 double unders in a single day"
+      },
+      {
+        quote: "Before starting I would trip up on 5 single unders. One day in and I am doing sets of 100 single unders easily. Highly recommend to anyone looking for an easy to follow structure.",
+        name: "Dani",
+        result: "Couldn’t string singles → 100 unbroken"
+      },
+      {
+        quote: "The level of detail you put into each lesson is SO HELPFUL. This course is freakin amazing.",
+        name: "Chad",
+        result: "CrossFit athlete"
+      },
+      {
+        quote: "I can’t recommend Spencer’s Double Under lesson program highly enough! Before I started, I could barely manage 2 or 3 unbroken double-unders, despite trying numerous YouTube videos with little success. With just 3 weeks, I went from a few double-unders to 20 unbroken ones. If you are serious about mastering double-unders, this course is the solution. It will save you so much time and frustration!",
+        name: "Carlos",
+        result: "2–3 → 20 unbroken in 3 weeks"
+      }
+    ];
+
+    const trackEl    = document.getElementById('testi-track');
+    const dotsEl     = document.getElementById('testi-dots');
+    const prevBtn    = document.getElementById('testi-prev');
+    const nextBtn    = document.getElementById('testi-next');
+    if (!trackEl || !dotsEl) return;
+
+    let current   = 0;
+    let autoTimer = null;
+
+    // Build slides + dots
+    testimonials.forEach((t, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'testi-slide' + (i === 0 ? ' active' : '');
+      slide.innerHTML =
+        '<span class="testi-big-quote">“</span>' +
+        '<p class="testi-quote-text" data-raw="' + t.quote.replace(/"/g, '&quot;') + '"></p>' +
+        '<div class="testi-attribution">' +
+          '<div class="testi-attr-line"></div>' +
+          '<div>' +
+            '<span class="testi-attr-name">' + t.name + '</span>' +
+            ' <span class="testi-attr-result">— ' + t.result + '</span>' +
+          '</div>' +
+        '</div>';
+      trackEl.appendChild(slide);
+
+      const dot = document.createElement('button');
+      dot.className = 'testi-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to testimonial ' + (i + 1));
+      dot.addEventListener('click', () => goTo(i, true));
+      dotsEl.appendChild(dot);
+    });
+
+    function revealWords(slideEl) {
+      const p    = slideEl.querySelector('.testi-quote-text');
+      const text = p.dataset.raw;
+      const words = text.split(' ');
+      p.innerHTML = words.map(w => '<span class="tword">' + w + '</span>').join(' ');
+      requestAnimationFrame(() => {
+        p.querySelectorAll('.tword').forEach((w, i) => {
+          setTimeout(() => w.classList.add('tw-visible'), i * 38);
+        });
+      });
+    }
+
+    function goTo(idx, resetTimer) {
+      const slides = trackEl.querySelectorAll('.testi-slide');
+      const dots   = dotsEl.querySelectorAll('.testi-dot');
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = ((idx % testimonials.length) + testimonials.length) % testimonials.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+      revealWords(slides[current]);
+      if (resetTimer) {
+        clearInterval(autoTimer);
+        setTimeout(startAuto, 2200);
+      }
+    }
+
+    function startAuto() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(() => goTo(current + 1, false), 5000);
+    }
+
+    // Initial word reveal
+    revealWords(trackEl.querySelectorAll('.testi-slide')[0]);
+
+    // Arrows
+    if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1, true));
+    if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1, true));
+
+    // Pause on hover
+    const carousel = document.querySelector('.testi-carousel');
+    if (carousel) {
+      carousel.addEventListener('mouseenter', () => clearInterval(autoTimer));
+      carousel.addEventListener('mouseleave', startAuto);
+    }
+
+    // Start auto when visible
+    const carouselObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { startAuto(); carouselObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.3 });
+    if (carousel) carouselObs.observe(carousel);
+  })();
+
+  // ── FAQ ACCORDION ──
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const trigger = item.querySelector('.faq-trigger');
+    trigger.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      // close all
+      faqItems.forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false');
+      });
+      // open clicked (if it wasn't open)
+      if (!isOpen) {
+        item.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>
+</body>
+</html>

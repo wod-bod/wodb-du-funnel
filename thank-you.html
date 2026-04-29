@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You're In! — 6-Week Double Under Fix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:   #080808;
+      --dark:    #111111;
+      --dark-2:  #171717;
+      --border:  rgba(255,255,255,0.07);
+      --orange:  #fb5000;
+      --orange2: #ff7033;
+      --white:   #FFFFFF;
+      --gray:    #888;
+      --teal:    #00E5C0;
+      --green:   #22c55e;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── CONFETTI CANVAS ── */
+    #confetti-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    .ty-header {
+      position: relative; z-index: 10;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(8,8,8,0.95);
+    }
+    .header-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.3rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+    }
+    .header-logo span { color: var(--orange); }
+
+    /* ── MAIN ── */
+    .ty-wrap {
+      position: relative; z-index: 5;
+      max-width: 660px; margin: 0 auto;
+      padding: 56px 24px 80px;
+      text-align: center;
+    }
+
+    /* ── SUCCESS BADGE ── */
+    .success-badge {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(34,197,94,0.1);
+      border: 2px solid rgba(34,197,94,0.4);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      animation: badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes badgePop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .success-badge svg { width: 32px; height: 32px; }
+
+    /* ── HEADLINE ── */
+    .ty-eyebrow {
+      font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--green); font-weight: 600; margin-bottom: 12px;
+      animation: fadeUp 0.5s 0.15s ease both;
+    }
+    .ty-headline {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: clamp(2.2rem, 6vw, 3.6rem); text-transform: uppercase;
+      letter-spacing: 0.03em; line-height: 1.05;
+      margin-bottom: 16px;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+    .ty-headline .accent { color: var(--orange); }
+    .ty-subhead {
+      font-size: 1rem; color: rgba(255,255,255,0.55);
+      line-height: 1.7; margin-bottom: 36px;
+      animation: fadeUp 0.5s 0.35s ease both;
+    }
+    .ty-subhead strong { color: var(--white); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── ORDER SUMMARY CARD ── */
+    .order-summary {
+      background: var(--dark-2);
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; margin-bottom: 28px;
+      text-align: left;
+      animation: fadeUp 0.5s 0.4s ease both;
+    }
+    .order-summary-header {
+      background: rgba(251,80,0,0.06);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .order-summary-header h3 {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .order-summary-header .check-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(34,197,94,0.15); border: 1.5px solid var(--green);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .order-summary-header .check-dot svg { width: 9px; height: 9px; }
+
+    .order-items { padding: 16px 24px 20px; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .order-items li {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .order-items li .item-name {
+      font-size: 0.9rem; color: rgba(255,255,255,0.7);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .item-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0;
+    }
+    .item-dot.orange { background: var(--orange); }
+    .order-items li .item-price {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1rem; color: var(--white); flex-shrink: 0;
+    }
+
+    /* ── NEXT STEPS ── */
+    .next-steps {
+      background: var(--dark-2);
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; margin-bottom: 28px;
+      text-align: left;
+      animation: fadeUp 0.5s 0.5s ease both;
+    }
+    .next-steps-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .steps-list { padding: 20px 24px; list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .step-item { display: flex; align-items: flex-start; gap: 14px; }
+    .step-num {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(251,80,0,0.1); border: 1.5px solid rgba(251,80,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 0.85rem; color: var(--orange);
+    }
+    .step-content { padding-top: 2px; }
+    .step-title {
+      font-size: 0.92rem; font-weight: 600; color: var(--white);
+      margin-bottom: 3px;
+    }
+    .step-desc {
+      font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.5;
+    }
+    .step-desc a { color: var(--orange); text-decoration: none; }
+    .step-desc a:hover { text-decoration: underline; }
+
+    /* ── SOCIAL SHARE ── */
+    .share-section {
+      animation: fadeUp 0.5s 0.6s ease both;
+    }
+    .share-label {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.25); margin-bottom: 12px; display: block;
+    }
+    .share-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 18px; border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.5);
+      text-decoration: none; transition: border-color 0.2s, color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+    .share-btn:hover {
+      border-color: rgba(251,80,0,0.3);
+      color: var(--white);
+      background: rgba(251,80,0,0.05);
+    }
+    .share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    .ty-footer {
+      position: relative; z-index: 5;
+      border-top: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ty-footer p { font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+
+    @media (max-width: 640px) {
+      .ty-header { padding: 14px 20px; }
+      .ty-wrap { padding: 40px 16px 60px; }
+      .ty-footer { padding: 16px 20px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ── HEADER ── -->
+<header class="ty-header">
+  <span class="header-logo">WOD <span>BOD</span></span>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="ty-wrap">
+
+  <!-- Success badge -->
+  <div class="success-badge">
+    <svg viewBox="0 0 32 32" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 16L13 23L26 10"/>
+    </svg>
+  </div>
+
+  <div class="ty-eyebrow">Payment Confirmed</div>
+
+  <h1 class="ty-headline">
+    You're In.<br>Let's <span class="accent">Get to Work.</span>
+  </h1>
+
+  <p class="ty-subhead">
+    Your order is confirmed and access is on its way to your inbox.
+    <strong>Check your email for login details</strong> — you'll be inside the program in minutes.
+  </p>
+
+  <!-- Order Summary -->
+  <div class="order-summary">
+    <div class="order-summary-header">
+      <div class="check-dot">
+        <svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>Your Order</h3>
+    </div>
+    <ul class="order-items" id="order-items">
+      <!-- Populated by JS -->
+    </ul>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="next-steps">
+    <div class="next-steps-header">What Happens Next</div>
+    <ul class="steps-list">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Check your email</div>
+          <div class="step-desc">Your login link and receipt are on their way. Check your spam folder if you don't see it within 5 minutes.</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Start with Lesson 1 today</div>
+          <div class="step-desc">Don't overthink it. Open Lesson 1, grab your rope, and do the drill. The first 10 minutes will change how you think about this skill.</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Follow the progression — don't skip ahead</div>
+          <div class="step-desc">Every step is there for a reason. The athletes who see the fastest results are the ones who trust the process and go in order.</div>
+        </div>
+      </li>
+      <li class="step-item" id="step-subscription" style="display:none;">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Manage your WOD BOD membership</div>
+          <div class="step-desc">Update payment, view invoices, or cancel anytime at <a id="portal-link" href="https://subscriptions.wodbodmethod.com">subscriptions.wodbodmethod.com</a>.</div>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-num" id="step-support-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Questions? We've got you.</div>
+          <div class="step-desc">Reach out anytime at <a href="mailto:support@wodbodmethod.com">support@wodbodmethod.com</a> — real response from a real person.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Share Section -->
+  <div class="share-section">
+    <span class="share-label">Share your win</span>
+    <div class="share-btns">
+      <a class="share-btn" id="share-ig" href="https://www.instagram.com/wodbodmethod" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+        Follow on Instagram
+      </a>
+      <a class="share-btn" href="https://wodbodmethod.com" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        WOD BOD Website
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="ty-footer">
+  <p>&copy; 2026 WOD BOD METHOD &bull; wodbodmethod.com</p>
+  <p>Questions? <a href="mailto:support@wodbodmethod.com" style="color:rgba(255,255,255,0.3);text-decoration:none;">support@wodbodmethod.com</a></p>
+</footer>
+
+<script>
+// ── POPULATE ORDER SUMMARY ────────────────────────
+(function() {
+  const purchase = JSON.parse(sessionStorage.getItem('du_purchase') || '{}');
+  const list = document.getElementById('order-items');
+
+  const items = [
+    { name: '6-Week Double Under Fix', price: '$37', dot: 'orange' },
+  ];
+  if (purchase.addSpringLoaded) items.push({ name: 'Spring Loaded (Jump Program)', price: '$27', dot: '' });
+  if (purchase.addTracker)      items.push({ name: 'DU Progression Tracker', price: '$7', dot: '' });
+  if (purchase.addedCoaching) items.push({ name: 'Video Coaching 3-Pack', price: '$97', dot: '' });
+  if (purchase.addedUpgrade) {
+    const plan  = purchase.subscriptionPlan === 'monthly' ? 'Monthly' : 'Annual';
+    const price = purchase.subscriptionPlan === 'monthly' ? '$97/mo'  : '$799/yr';
+    items.push({ name: 'WOD BOD Method — ' + plan + ' Membership', price, dot: '' });
+  }
+  if (purchase.addedRxBlueprint) items.push({ name: 'RX Fast-Track Blueprint', price: '$27', dot: '' });
+
+  items.forEach(item => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="item-name">
+        <span class="item-dot ${item.dot}"></span>
+        ${item.name}
+      </span>
+      <span class="item-price">${item.price}</span>
+    `;
+    list.appendChild(li);
+  });
+
+  // Show subscription management step if they bought WOD BOD
+  if (purchase.addedUpgrade && purchase.customerId) {
+    const stepEl   = document.getElementById('step-subscription');
+    const portalEl = document.getElementById('portal-link');
+    const numEl    = document.getElementById('step-support-num');
+    if (stepEl) {
+      stepEl.style.display = '';
+      if (portalEl) {
+        portalEl.href = 'https://subscriptions.wodbodmethod.com?customer=' + encodeURIComponent(purchase.customerId);
+      }
+    }
+    if (numEl) numEl.textContent = '5';
+  }
+})();
+
+// ── CONFETTI ─────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const COLORS = ['#fb5000', '#ff7033', '#00E5C0', '#ffffff', '#ffcc00', '#ff3399'];
+  const particles = [];
+
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * canvas.height,
+      w: 6 + Math.random() * 8,
+      h: 10 + Math.random() * 14,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.12,
+      vx: (Math.random() - 0.5) * 2,
+      vy: 2 + Math.random() * 3,
+      opacity: 0.7 + Math.random() * 0.3,
+    });
+  }
+
+  let running = true;
+  let tick = 0;
+
+  function draw() {
+    if (!running) return;
+    tick++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.04;  // gravity
+      p.rotation += p.rotSpeed;
+      if (p.y > canvas.height + 20) {
+        p.y = -20;
+        p.x = Math.random() * canvas.width;
+        p.vy = 2 + Math.random() * 3;
+      }
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    // Stop after ~4 seconds
+    if (tick < 240) {
+      requestAnimationFrame(draw);
+    } else {
+      running = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  draw();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — 6-Week Double Under Fix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:     #080808;
+      --dark:      #111111;
+      --dark-2:    #171717;
+      --border:    rgba(255,255,255,0.07);
+      --orange:    #fb5000;
+      --orange-2:  #ff7033;
+      --white:     #FFFFFF;
+      --gray-text: #888;
+      --teal:      #00E5C0;
+      --success:   #22c55e;
+      --error:     #ef4444;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    .checkout-header {
+      background: rgba(8,8,8,0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .header-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.4rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+    }
+    .header-logo span { color: var(--orange); }
+    .header-secure {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+    .header-secure svg { width: 13px; height: 13px; opacity: 0.5; }
+    .header-steps {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header-steps .step { display: flex; align-items: center; gap: 6px; }
+    .header-steps .step-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.72rem;
+    }
+    .header-steps .step-dot.done {
+      background: rgba(251,80,0,0.2); border: 1.5px solid rgba(251,80,0,0.4);
+      color: var(--orange);
+    }
+    .header-steps .step-dot.active {
+      background: var(--orange); border: 1.5px solid var(--orange); color: #fff;
+    }
+    .header-steps .step-line { width: 24px; height: 1px; background: var(--border); }
+
+    /* ── LAYOUT ── */
+    .checkout-wrap {
+      max-width: 1080px; margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: start;
+    }
+
+    /* ── LEFT: ORDER SUMMARY ── */
+    .summary-col {}
+    .summary-label {
+      font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gray-text); margin-bottom: 20px; display: block;
+    }
+    .summary-card {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .summary-card-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    }
+    .summary-card-header h3 {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.25rem; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--white); line-height: 1.15;
+    }
+    .summary-card-header h3 span { color: var(--orange); }
+    .summary-price-tag {
+      text-align: right; flex-shrink: 0;
+    }
+    .summary-price-tag .was {
+      font-size: 0.8rem; color: rgba(255,255,255,0.25);
+      text-decoration: line-through; display: block; line-height: 1;
+    }
+    .summary-price-tag .now {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2rem; line-height: 1.1;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .summary-bullets {
+      list-style: none; padding: 16px 24px 20px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .summary-bullets li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.65);
+    }
+    .summary-bullets li .check {
+      flex-shrink: 0; width: 16px; height: 16px; border-radius: 50%;
+      background: rgba(0,229,192,0.1); border: 1px solid var(--teal);
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .summary-bullets li .check svg { width: 8px; height: 8px; }
+
+    /* Bonus line */
+    .bonus-line {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 24px 16px;
+      font-size: 0.82rem; color: rgba(255,255,255,0.4);
+      border-top: 1px solid var(--border);
+    }
+    .bonus-line svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .bonus-line strong { color: var(--orange); }
+
+    /* Testimonial */
+    .summary-testimonial {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; margin-bottom: 20px;
+    }
+    .stars-sm { display: flex; gap: 2px; margin-bottom: 8px; }
+    .stars-sm svg { width: 11px; height: 11px; fill: var(--orange); }
+    .summary-testimonial blockquote {
+      font-size: 0.88rem; line-height: 1.65; color: rgba(255,255,255,0.55);
+      font-style: italic; margin-bottom: 8px;
+    }
+    .summary-testimonial cite {
+      font-style: normal; font-size: 0.78rem; font-weight: 600;
+      color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .summary-testimonial .result-tag {
+      font-size: 0.72rem; color: var(--teal); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-left: 8px;
+    }
+
+    /* Trust badges */
+    .trust-row {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .trust-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 12px; border-radius: 6px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    .trust-badge svg { width: 13px; height: 13px; opacity: 0.5; }
+
+    /* ── RIGHT: CHECKOUT FORM ── */
+    .form-col {}
+    .form-heading {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem); text-transform: uppercase;
+      letter-spacing: 0.03em; line-height: 1; margin-bottom: 6px;
+    }
+    .form-heading span { color: var(--orange); }
+    .form-subheading {
+      font-size: 0.88rem; color: var(--gray-text); margin-bottom: 28px; line-height: 1.5;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); margin-bottom: 7px;
+    }
+    .form-group input {
+      width: 100%; padding: 13px 16px;
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.97rem;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-group input::placeholder { color: rgba(255,255,255,0.2); }
+    .form-group input:focus {
+      border-color: rgba(251,80,0,0.5);
+      box-shadow: 0 0 0 3px rgba(251,80,0,0.08);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Stripe Element container */
+    .stripe-element-wrap {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 14px 16px;
+      margin-bottom: 4px; transition: border-color 0.2s;
+    }
+    .stripe-element-wrap.focused { border-color: rgba(251,80,0,0.5); }
+    #payment-element { min-height: 44px; }
+
+    /* ── ORDER BUMPS ── */
+    .bumps-section { margin: 20px 0; }
+    .bumps-label {
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); margin-bottom: 10px; display: block;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+
+    .bump-item {
+      background: var(--dark-2);
+      border: 1.5px solid rgba(251,80,0,0.2);
+      border-radius: 10px; overflow: hidden; margin-bottom: 10px;
+      transition: border-color 0.25s, background 0.25s;
+      cursor: pointer;
+    }
+    .bump-item:hover { border-color: rgba(251,80,0,0.4); }
+    .bump-item.checked {
+      border-color: rgba(251,80,0,0.6);
+      background: rgba(251,80,0,0.04);
+    }
+    .bump-item label {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 18px; cursor: pointer;
+    }
+    /* Hide default checkbox */
+    .bump-item input[type="checkbox"] { display: none; }
+    .bump-checkbox {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 4px;
+      border: 1.5px solid rgba(255,255,255,0.2); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px; transition: background 0.2s, border-color 0.2s;
+    }
+    .bump-item.checked .bump-checkbox {
+      background: var(--orange); border-color: var(--orange);
+    }
+    .bump-checkbox svg { width: 11px; height: 11px; display: none; }
+    .bump-item.checked .bump-checkbox svg { display: block; }
+
+    .bump-content { flex: 1; min-width: 0; }
+    .bump-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; margin-bottom: 4px;
+    }
+    .bump-tag-pill {
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--orange); font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .bump-tag-pill::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--orange); flex-shrink: 0;
+    }
+    .bump-add-price {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.1rem; color: var(--white); letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .bump-content strong {
+      display: block; font-size: 0.95rem; font-weight: 600;
+      color: var(--white); margin-bottom: 3px;
+    }
+    .bump-content p {
+      font-size: 0.82rem; line-height: 1.5; color: rgba(255,255,255,0.5);
+    }
+
+    /* ── TOTAL + PAY BUTTON ── */
+    .total-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .total-label { font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-text); }
+    .total-amount {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2.2rem; line-height: 1;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      transition: opacity 0.15s;
+    }
+    .total-amount.updating { opacity: 0.4; }
+
+    .pay-btn {
+      width: 100%; padding: 18px 24px;
+      background: linear-gradient(135deg, var(--orange) 0%, #d94500 100%);
+      border: none; border-radius: 6px; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1.35rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--white);
+      position: relative; overflow: hidden;
+      box-shadow: 0 6px 28px rgba(251,80,0,0.35);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .pay-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+      transform: translateX(-100%) skewX(-15deg);
+      transition: transform 0.5s ease;
+    }
+    .pay-btn:hover::before { transform: translateX(200%) skewX(-15deg); }
+    .pay-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(251,80,0,0.5); }
+    .pay-btn:active { transform: translateY(0); }
+    .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .pay-btn .btn-lock { width: 16px; height: 16px; flex-shrink: 0; }
+    .pay-btn .spinner {
+      display: none; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pay-btn.loading .btn-text { display: none; }
+    .pay-btn.loading .btn-lock { display: none; }
+    .pay-btn.loading .spinner { display: block; }
+
+    /* Error message */
+    #payment-error {
+      display: none; margin-top: 12px;
+      padding: 12px 16px; border-radius: 6px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      font-size: 0.88rem; color: #fca5a5; line-height: 1.5;
+    }
+
+    /* Security line */
+    .security-line {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-top: 14px; font-size: 0.75rem; color: rgba(255,255,255,0.25);
+      letter-spacing: 0.04em;
+    }
+    .security-line svg { width: 12px; height: 12px; opacity: 0.4; }
+
+    /* ── LOADING STATE ── */
+    #form-loading {
+      text-align: center; padding: 60px 24px;
+      color: rgba(255,255,255,0.3); font-size: 0.9rem; letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    #form-loading .loading-spinner {
+      width: 28px; height: 28px; margin: 0 auto 16px;
+      border: 2px solid rgba(255,255,255,0.08);
+      border-top-color: var(--orange); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    #checkout-form { display: none; }
+
+    /* ── FOOTER ── */
+    .checkout-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .checkout-footer p { font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+    .checkout-footer a { color: rgba(255,255,255,0.25); text-decoration: none; }
+    .checkout-footer a:hover { color: var(--orange); }
+    .powered-by {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.72rem; color: rgba(255,255,255,0.2);
+    }
+    .powered-by svg { width: 36px; height: 15px; opacity: 0.3; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 780px) {
+      .checkout-header { padding: 14px 20px; }
+      .header-steps { display: none; }
+      .checkout-wrap { grid-template-columns: 1fr; padding: 24px 16px 60px; gap: 28px; }
+      .form-row { grid-template-columns: 1fr; }
+      .checkout-footer { padding: 16px 20px; flex-direction: column; text-align: center; }
+      /* Form first on mobile — buyer already decided, don't re-sell them */
+      .form-col    { order: -1; }
+      .summary-col { order:  0; }
+    }
+    @media (max-width: 480px) {
+      .trust-row { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="checkout-header">
+  <a href="/index.html" class="header-logo">WOD <span>BOD</span></a>
+
+  <div class="header-steps">
+    <div class="step">
+      <div class="step-dot done">1</div>
+      <span>Details</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-dot active">2</div>
+      <span>Checkout</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-dot" style="border:1.5px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.2);">3</div>
+      <span style="color:rgba(255,255,255,0.2);">Access</span>
+    </div>
+  </div>
+
+  <div class="header-secure">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Secure Checkout
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="checkout-wrap">
+
+  <!-- LEFT: ORDER SUMMARY -->
+  <div class="summary-col">
+    <span class="summary-label">Your Order</span>
+
+    <div class="summary-card">
+      <div class="summary-card-header">
+        <div>
+          <h3><span>6-Week</span> Double Under Fix</h3>
+        </div>
+        <div class="summary-price-tag">
+          <span class="was">$822</span>
+          <span class="now" id="summary-price">$37</span>
+        </div>
+      </div>
+
+      <ul class="summary-bullets">
+        <li>
+          <span class="check"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4l2.5 2.5L7 1.5" stroke="#00E5C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Full technique breakdown &amp; fault identification videos
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4l2.5 2.5L7 1.5" stroke="#00E5C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          6-step progression: 0 to 20+ unbroken reps
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4l2.5 2.5L7 1.5" stroke="#00E5C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          30-day challenge: 20 to 100+ unbroken
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4l2.5 2.5L7 1.5" stroke="#00E5C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Injury prevention PDF &amp; jump rope selection guide
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 8 8" fill="none"><path d="M1 4l2.5 2.5L7 1.5" stroke="#00E5C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Video warm-up &amp; cool-down routines
+        </li>
+      </ul>
+
+    </div>
+
+    <!-- Mini testimonial -->
+    <div class="summary-testimonial">
+      <div class="stars-sm">
+        <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+        <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+        <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+        <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+        <svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+      </div>
+      <blockquote>&ldquo;Lesson 1 took me from 2 to 12 double unders in a single day. I couldn&rsquo;t believe how much one focused session could change.&rdquo;</blockquote>
+      <cite>Steve <span class="result-tag">2 → 12 reps in one session</span></cite>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="trust-row">
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        256-bit SSL
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Instant access
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        One-time payment
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: CHECKOUT FORM -->
+  <div class="form-col">
+    <h1 class="form-heading">Complete Your <span>Order</span></h1>
+    <p class="form-subheading">You&rsquo;re one step away from fixing your double unders for good.</p>
+
+    <!-- Loading state -->
+    <div id="form-loading">
+      <div class="loading-spinner"></div>
+      Preparing secure checkout&hellip;
+    </div>
+
+    <!-- The form (hidden until PI is ready) -->
+    <form id="checkout-form" novalidate>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" name="firstName" placeholder="Spencer" autocomplete="given-name" required />
+        </div>
+        <div class="form-group">
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" name="lastName" placeholder="Johnson" autocomplete="family-name" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+      </div>
+
+      <!-- Stripe Payment Element -->
+      <div class="form-group">
+        <label>Card Details</label>
+        <div class="stripe-element-wrap" id="stripe-element-wrap">
+          <div id="payment-element"></div>
+        </div>
+      </div>
+
+      <!-- ── ORDER BUMPS ── -->
+      <div class="bumps-section">
+        <span class="bumps-label">Commonly added with this course</span>
+
+        <!-- OB1: Spring Loaded -->
+        <div class="bump-item" id="bump-spring-wrap">
+          <label>
+            <input type="checkbox" id="bump-spring" />
+            <div class="bump-checkbox">
+              <svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="bump-content">
+              <div class="bump-top">
+                <span class="bump-tag-pill">Spring Loaded</span>
+                <span class="bump-add-price">+ $27</span>
+              </div>
+              <strong>Build the jump height that makes DUs easier</strong>
+              <p>4-week plyometric program that increases your vertical and reduces energy burned per rep — pairs directly with the DU Fix progression.</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- OB2: DU Progression Tracker -->
+        <div class="bump-item" id="bump-tracker-wrap">
+          <label>
+            <input type="checkbox" id="bump-tracker" />
+            <div class="bump-checkbox">
+              <svg viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="bump-content">
+              <div class="bump-top">
+                <span class="bump-tag-pill">DU Progression Tracker</span>
+                <span class="bump-add-price">+ $7</span>
+              </div>
+              <strong>Printable week-by-week tracking sheet</strong>
+              <p>Log your sets, hit your benchmarks, and stay accountable through the full program — print once, use all 6 weeks.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="total-row">
+        <span class="total-label">Total Today</span>
+        <span class="total-amount" id="total-display">$37</span>
+      </div>
+
+      <!-- Pay button -->
+      <button type="submit" class="pay-btn" id="pay-btn">
+        <svg class="btn-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="btn-text" id="btn-text">Complete Purchase &mdash; $37</span>
+        <div class="spinner"></div>
+      </button>
+
+      <div id="payment-error"></div>
+
+      <p class="security-line">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Secured by Stripe &bull; 256-bit TLS encryption &bull; PCI compliant
+      </p>
+
+    </form>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="checkout-footer">
+  <p>&copy; 2026 WOD BOD METHOD &bull; <a href="https://wodbodmethod.com">wodbodmethod.com</a></p>
+  <div class="powered-by">
+    Secured by
+    <!-- Stripe wordmark SVG -->
+    <svg viewBox="0 0 60 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.5 10.3c0-.7.6-1 1.5-1 1.4 0 3.1.4 4.5 1.1V6.9c-1.5-.6-3-.9-4.5-.9C6.4 6 4 7.7 4 10.6c0 4.5 6.2 3.8 6.2 5.7 0 .8-.7 1.1-1.7 1.1-1.5 0-3.4-.6-4.9-1.5v3.6c1.7.7 3.4 1 4.9 1 3.2 0 5.4-1.6 5.4-4.5-.1-4.9-6.4-4-6.4-5.7zm13.6-7.2l-3.7.8-.1 12.9h3.8V3.1zm5.8 3.5l-3.8.8V20h3.8v-7.3c.9-1.2 2.4-1 2.9-.8V8.6c-.5-.2-2.3-.5-2.9.9V6.6zm9.4-.2c-1.5 0-2.5.7-3.1 1.2l-.2-1H30v19.2l3.8-.8.1-4.6c.6.4 1.4.9 2.9.9 2.9 0 5.5-2.3 5.5-7.5-.1-4.8-2.7-7.4-5.5-7.4zm-1 11.3c-1 0-1.5-.3-1.9-.8l-.1-6.4c.4-.5 1-.9 2-.9 1.5 0 2.5 1.7 2.5 4 0 2.4-1 4.1-2.5 4.1zm13.6-11.3c-3.6 0-5.8 2.7-5.8 7.5 0 5 2.3 7.4 6 7.4 1.7 0 3-.4 4-1.1v-3.2c-1 .6-2.2.9-3.5.9-1.4 0-2.6-.5-2.7-2.3h6.8c0-.2.1-.9.1-1.3 0-4.4-2-7.9-5.9-7.9zm-2.1 6c0-1.7.9-2.9 2-2.9s1.9 1.2 1.9 2.9h-3.9z" fill="white" opacity="0.5"/>
+    </svg>
+  </div>
+</footer>
+
+<script>
+(async function() {
+  // ── CONFIG ────────────────────────────────────────
+  const PUBLISHABLE_KEY = 'pk_live_51NhXbFFO8DzdlvQ1Kfp8MaP6eakuukN61kjvZIunsQXYW7zetr7HRrBvP166ElVKdscDuGLLYpgzRTQPwErtYVuw00kkwUUuSp';
+  const PRICES = { main: 37, springLoaded: 27, tracker: 7 };
+
+  const stripeLib = Stripe(PUBLISHABLE_KEY);
+  let elements, paymentIntentId;
+  let addSpringLoaded = false;
+  let addTracker      = false;
+
+  // ── DOM REFS ──────────────────────────────────────
+  const formLoading   = document.getElementById('form-loading');
+  const checkoutForm  = document.getElementById('checkout-form');
+  const totalDisplay  = document.getElementById('total-display');
+  const btnText       = document.getElementById('btn-text');
+  const payBtn        = document.getElementById('pay-btn');
+  const errorDiv      = document.getElementById('payment-error');
+  const bumpSpringWrap  = document.getElementById('bump-spring-wrap');
+  const bumpTrackerWrap = document.getElementById('bump-tracker-wrap');
+  const bumpSpring    = document.getElementById('bump-spring');
+  const bumpTracker   = document.getElementById('bump-tracker');
+  const summaryPrice  = document.getElementById('summary-price');
+
+  // ── HELPERS ───────────────────────────────────────
+  function calcTotal() {
+    let t = PRICES.main;
+    if (addSpringLoaded) t += PRICES.springLoaded;
+    if (addTracker)      t += PRICES.tracker;
+    return t;
+  }
+
+  function updateUI() {
+    const total = calcTotal();
+    totalDisplay.textContent = `$${total}`;
+    btnText.textContent      = `Complete Purchase — $${total}`;
+    summaryPrice.textContent = `$${total}`;
+  }
+
+  function showError(msg) {
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = msg;
+  }
+  function clearError() {
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
+  }
+
+  // ── INIT PAYMENT INTENT ───────────────────────────
+  async function initPaymentIntent() {
+    try {
+      const res = await fetch('/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addSpringLoaded: false, addTracker: false }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      paymentIntentId = data.paymentIntentId;
+
+      // Create Stripe Elements
+      elements = stripeLib.elements({
+        clientSecret: data.clientSecret,
+        appearance: {
+          theme: 'night',
+          variables: {
+            colorPrimary:        '#fb5000',
+            colorBackground:     '#171717',
+            colorText:           '#ffffff',
+            colorDanger:         '#ef4444',
+            fontFamily:          'DM Sans, sans-serif',
+            borderRadius:        '6px',
+            spacingUnit:         '4px',
+          },
+          rules: {
+            '.Input': {
+              border: '1px solid rgba(255,255,255,0.07)',
+              backgroundColor: '#171717',
+            },
+            '.Input:focus': {
+              border: '1px solid rgba(251,80,0,0.5)',
+              boxShadow: '0 0 0 3px rgba(251,80,0,0.08)',
+            },
+            '.Label': {
+              color: 'rgba(255,255,255,0.45)',
+              fontSize: '0.78rem',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            },
+          },
+        },
+      });
+
+      const paymentElement = elements.create('payment', {
+        layout: { type: 'accordion', defaultCollapsed: false, radios: false, spacedAccordionItems: false },
+      });
+      paymentElement.mount('#payment-element');
+
+      // Show form
+      formLoading.style.display  = 'none';
+      checkoutForm.style.display = 'block';
+
+    } catch (err) {
+      formLoading.innerHTML = `<p style="color:#ef4444;">Unable to load checkout. Please refresh the page.</p>`;
+      console.error(err);
+    }
+  }
+
+  // ── UPDATE PAYMENT INTENT (bumps toggle) ──────────
+  async function syncBumps() {
+    if (!paymentIntentId) return;
+    totalDisplay.classList.add('updating');
+    try {
+      const res = await fetch('/update-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentIntentId, addSpringLoaded, addTracker }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+    } catch (err) {
+      console.error('Bump sync error:', err.message);
+    } finally {
+      totalDisplay.classList.remove('updating');
+      updateUI();
+    }
+  }
+
+  // ── BUMP TOGGLE HANDLERS ──────────────────────────
+  bumpSpringWrap.addEventListener('click', () => {
+    addSpringLoaded = !addSpringLoaded;
+    bumpSpring.checked = addSpringLoaded;
+    bumpSpringWrap.classList.toggle('checked', addSpringLoaded);
+    syncBumps();
+  });
+
+  bumpTrackerWrap.addEventListener('click', () => {
+    addTracker = !addTracker;
+    bumpTracker.checked = addTracker;
+    bumpTrackerWrap.classList.toggle('checked', addTracker);
+    syncBumps();
+  });
+
+  // Prevent label double-firing
+  bumpSpring.addEventListener('click',  e => e.stopPropagation());
+  bumpTracker.addEventListener('click', e => e.stopPropagation());
+
+  // ── FORM SUBMIT ───────────────────────────────────
+  checkoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName  = document.getElementById('last-name').value.trim();
+    const email     = document.getElementById('email').value.trim();
+
+    if (!firstName || !lastName) { showError('Please enter your first and last name.'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please enter a valid email address.'); return; }
+
+    payBtn.disabled = true;
+    payBtn.classList.add('loading');
+
+    try {
+      const { error, paymentIntent } = await stripeLib.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/upsell-1`,
+          payment_method_data: {
+            billing_details: {
+              name:  `${firstName} ${lastName}`,
+              email: email,
+            },
+          },
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        showError(error.message);
+        payBtn.disabled = false;
+        payBtn.classList.remove('loading');
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Persist customer + payment method for one-click upsells
+        let customerId = null, paymentMethodId = null;
+        try {
+          const cpRes = await fetch('/confirm-purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              paymentIntentId,
+              email,
+              name: `${firstName} ${lastName}`,
+            }),
+          });
+          const cpData = await cpRes.json();
+          if (!cpData.error) {
+            customerId      = cpData.customerId;
+            paymentMethodId = cpData.paymentMethodId;
+          }
+        } catch (_) { /* non-fatal — upsell pages will handle gracefully */ }
+
+        // Store purchase info for upsell pages
+        sessionStorage.setItem('du_purchase', JSON.stringify({
+          email,
+          name: `${firstName} ${lastName}`,
+          paymentIntentId,
+          customerId,
+          paymentMethodId,
+          addSpringLoaded,
+          addTracker,
+        }));
+        window.location.href = '/upsell-1';
+      }
+    } catch (err) {
+      showError('Something went wrong. Please try again.');
+      payBtn.disabled = false;
+      payBtn.classList.remove('loading');
+    }
+  });
+
+  // ── KICK OFF ──────────────────────────────────────
+  await initPaymentIntent();
+  updateUI();
+})();
+</script>
+
+</body>
+</html>

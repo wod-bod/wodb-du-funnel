@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>One-Time Offer — Full WOD BOD Program</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:   #080808;
+      --dark:    #111111;
+      --dark-2:  #171717;
+      --border:  rgba(255,255,255,0.07);
+      --orange:  #fb5000;
+      --orange2: #ff7033;
+      --white:   #FFFFFF;
+      --gray:    #888;
+      --teal:    #00E5C0;
+      --green:   #22c55e;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── URGENCY BANNER ── */
+    .urgency-bar {
+      background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+      border-bottom: 1px solid rgba(251,80,0,0.2);
+      text-align: center;
+      padding: 12px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: 1rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--orange);
+    }
+    .urgency-bar span { color: rgba(255,255,255,0.4); font-weight: 400; font-size: 0.85rem; margin-left: 8px; }
+
+    /* ── HEADER ── */
+    .oto-header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(8,8,8,0.95);
+    }
+    .header-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.3rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+    }
+    .header-logo span { color: var(--orange); }
+    .step-badge {
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gray); background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 5px 14px;
+    }
+    .step-badge strong { color: var(--orange); }
+
+    /* ── MAIN LAYOUT ── */
+    .oto-wrap {
+      max-width: 780px; margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── OTO PILL ── */
+    .oto-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(251,80,0,0.1); border: 1px solid rgba(251,80,0,0.3);
+      border-radius: 20px; padding: 6px 16px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.82rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 20px;
+    }
+    .oto-pill::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--orange); animation: dotBlink 1.2s ease infinite;
+    }
+    @keyframes dotBlink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+    }
+
+    /* ── HEADLINE ── */
+    .oto-headline {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3.2rem); text-transform: uppercase;
+      letter-spacing: 0.03em; line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .oto-headline .accent { color: var(--orange); }
+    .oto-subhead {
+      font-size: 1.05rem; color: rgba(255,255,255,0.6);
+      line-height: 1.65; margin-bottom: 36px; max-width: 600px;
+    }
+    .oto-subhead strong { color: var(--white); }
+
+    /* ── PRODUCT CARD ── */
+    .product-card {
+      background: var(--dark-2);
+      border: 1.5px solid rgba(251,80,0,0.25);
+      border-radius: 16px; overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .product-card-header {
+      background: linear-gradient(135deg, rgba(251,80,0,0.15) 0%, rgba(251,80,0,0.03) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .product-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .product-title span { color: var(--orange); }
+    .price-block { text-align: right; }
+    .price-was {
+      font-size: 0.82rem; color: rgba(255,255,255,0.3);
+      text-decoration: line-through; display: block;
+    }
+    .price-now {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2.4rem; line-height: 1;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--orange2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .price-label {
+      font-size: 0.7rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    .product-body { padding: 24px 28px; }
+    .what-you-get {
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gray); margin-bottom: 14px; display: block;
+    }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.8);
+    }
+    .feature-list li .icon {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,229,192,0.1); border: 1px solid var(--teal);
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .feature-list li .icon svg { width: 10px; height: 10px; }
+
+    /* Program pillars grid */
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+    .pillars-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    .pillar-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 14px 12px;
+    }
+    .pillar-label {
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 4px; font-weight: 700;
+    }
+    .pillar-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+      font-size: 1rem; text-transform: uppercase; letter-spacing: 0.03em;
+      color: var(--white); margin-bottom: 3px;
+    }
+    .pillar-desc {
+      font-size: 0.78rem; color: rgba(255,255,255,0.4); line-height: 1.4;
+    }
+
+    /* ── TESTIMONIAL ── */
+    .oto-testimonial {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 22px; margin-bottom: 28px;
+      border-left: 3px solid var(--orange);
+    }
+    .stars { display: flex; gap: 3px; margin-bottom: 8px; }
+    .stars svg { width: 13px; height: 13px; fill: var(--orange); }
+    .oto-testimonial blockquote {
+      font-size: 0.92rem; line-height: 1.7; color: rgba(255,255,255,0.6);
+      font-style: italic; margin-bottom: 8px;
+    }
+    .oto-testimonial cite {
+      font-style: normal; font-size: 0.78rem; font-weight: 600;
+      color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ── CTA BUTTONS ── */
+    .cta-section { text-align: center; }
+    .btn-yes {
+      display: block; width: 100%;
+      padding: 20px 32px;
+      background: linear-gradient(135deg, var(--orange) 0%, #d94500 100%);
+      border: none; border-radius: 8px; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.4rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--white);
+      position: relative; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(251,80,0,0.4);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      margin-bottom: 14px;
+    }
+    .btn-yes::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+      transform: translateX(-100%) skewX(-15deg);
+      transition: transform 0.5s ease;
+    }
+    .btn-yes:hover::before { transform: translateX(200%) skewX(-15deg); }
+    .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(251,80,0,0.55); }
+    .btn-yes:active { transform: translateY(0); }
+    .btn-yes:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-yes .spinner {
+      display: none; width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-yes.loading .btn-yes-text { display: none; }
+    .btn-yes.loading .spinner { display: block; }
+    .btn-yes-text { pointer-events: none; }
+    .btn-yes-sub {
+      font-size: 0.72rem; font-family: 'DM Sans', sans-serif; font-weight: 400;
+      opacity: 0.75; letter-spacing: 0; text-transform: none;
+      margin-top: 2px; display: block;
+    }
+
+    .btn-no {
+      display: inline-block; background: none; border: none; cursor: pointer;
+      font-size: 0.8rem; color: rgba(255,255,255,0.25);
+      text-decoration: underline; text-decoration-color: rgba(255,255,255,0.1);
+      letter-spacing: 0.03em; transition: color 0.2s;
+      padding: 8px 16px;
+    }
+    .btn-no:hover { color: rgba(255,255,255,0.45); }
+
+    #upsell-error {
+      display: none; margin-top: 12px;
+      padding: 12px 16px; border-radius: 6px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      font-size: 0.88rem; color: #fca5a5; line-height: 1.5; text-align: left;
+    }
+
+    /* ── GUARANTEE ── */
+    .guarantee-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-top: 24px; padding: 16px 18px;
+      background: rgba(34,197,94,0.05);
+      border: 1px solid rgba(34,197,94,0.15); border-radius: 8px;
+    }
+    .guarantee-icon {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(34,197,94,0.1); border: 1.5px solid rgba(34,197,94,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .guarantee-icon svg { width: 16px; height: 16px; }
+    .guarantee-text { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+    .guarantee-text strong { color: rgba(255,255,255,0.8); }
+
+    /* ── FOOTER ── */
+    .oto-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .oto-footer p { font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+
+    /* ── PLAN SELECTOR ── */
+    .plan-selector {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      padding: 20px 28px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .plan-card {
+      border-radius: 10px; padding: 18px 18px 16px;
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      cursor: pointer; position: relative;
+      transition: border-color 0.25s, background 0.25s, transform 0.2s;
+      user-select: none;
+    }
+    .plan-card:hover { transform: translateY(-2px); }
+    .plan-card.active {
+      border-color: var(--orange);
+      background: rgba(251,80,0,0.06);
+    }
+    .plan-card.active::after {
+      content: '';
+      position: absolute; top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px;
+      border-radius: 11px;
+      box-shadow: 0 0 0 1px var(--orange), 0 0 20px rgba(251,80,0,0.15);
+      pointer-events: none;
+    }
+    .plan-badge {
+      display: inline-block; padding: 2px 10px;
+      background: var(--orange); border-radius: 20px;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--white);
+      margin-bottom: 10px;
+    }
+    .plan-name {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); margin-bottom: 6px; font-weight: 600;
+    }
+    .plan-card.active .plan-name { color: rgba(255,255,255,0.6); }
+    .plan-price {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2.2rem; line-height: 1; color: var(--white);
+      margin-bottom: 4px;
+    }
+    .plan-per { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,0.4); }
+    .plan-sub {
+      font-size: 0.8rem; color: rgba(255,255,255,0.4); line-height: 1.4;
+    }
+    .plan-card.active .plan-sub { color: rgba(255,255,255,0.6); }
+    .plan-sub strong { color: var(--teal); }
+    .plan-savings {
+      margin-top: 6px; font-size: 0.72rem; font-weight: 600;
+      color: var(--teal); letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 640px) {
+      .oto-header { padding: 14px 20px; }
+      .oto-wrap { padding: 32px 16px 60px; }
+      .product-card-header { flex-direction: column; align-items: flex-start; }
+      .price-block { text-align: left; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .oto-footer { padding: 16px 20px; flex-direction: column; }
+      .plan-selector { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── URGENCY BANNER ── -->
+<div class="urgency-bar">
+  Membership Offer — Only Available Right Now
+  <span>This discount disappears when you leave</span>
+</div>
+
+<!-- ── HEADER ── -->
+<header class="oto-header">
+  <span class="header-logo">WOD <span>BOD</span></span>
+  <span class="step-badge">Final Step — <strong>Complete Your Training</strong></span>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="oto-wrap">
+
+  <!-- Pill -->
+  <div class="oto-pill">Exclusive Member Offer</div>
+
+  <!-- Headline -->
+  <h1 class="oto-headline">
+    Double Unders Fixed.<br>
+    <span class="accent">Now RX Everything Else.</span>
+  </h1>
+  <p class="oto-subhead">
+    The Double Under Fix handles the rope. <strong>WOD BOD handles the rest.</strong>
+    If your goal is to truly RX workouts — not just check boxes — this is the membership that gets you there.
+  </p>
+
+  <!-- Product Card -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <div>
+        <div class="product-title"><span>WOD BOD</span> Method</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.4);margin-top:4px;">Complete CrossFit skill &amp; strength membership</div>
+      </div>
+    </div>
+
+    <!-- Plan Selector -->
+    <div class="plan-selector">
+      <div class="plan-card plan-annual active" id="plan-annual">
+        <div class="plan-badge">Best Value</div>
+        <div class="plan-name">Annual</div>
+        <div class="plan-price">$799<span class="plan-per">/yr</span></div>
+        <div class="plan-sub">$66/mo · <strong>3 months free</strong></div>
+        <div class="plan-savings">Save $365 vs monthly</div>
+      </div>
+      <div class="plan-card plan-monthly" id="plan-monthly">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">$97<span class="plan-per">/mo</span></div>
+        <div class="plan-sub">Cancel anytime</div>
+      </div>
+    </div>
+
+    <div class="product-body">
+      <span class="what-you-get">What's included</span>
+      <ul class="feature-list">
+        <li>
+          <span class="icon"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Full WOD BOD skill library — pull-ups, toes-to-bar, muscle-ups, handstand walks, and more</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Structured strength progressions built specifically for CrossFit athletes — no random programming</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Benchmark WOD breakdowns — strategy for Fran, Grace, Cindy, and every major benchmark</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>New content added monthly — the program grows as WOD BOD grows</span>
+        </li>
+        <li>
+          <span class="icon"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#00E5C0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Private community access — connect with other athletes working the same system</span>
+        </li>
+      </ul>
+
+      <div class="divider"></div>
+      <span class="what-you-get">What you'll unlock</span>
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-label">Pillar 01</div>
+          <div class="pillar-title">Skill Mastery</div>
+          <div class="pillar-desc">Every gymnastics movement, broken into step-by-step progressions</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-label">Pillar 02</div>
+          <div class="pillar-title">Engine Building</div>
+          <div class="pillar-desc">Aerobic base + anaerobic capacity to never gas out mid-WOD</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-label">Pillar 03</div>
+          <div class="pillar-title">Strength Base</div>
+          <div class="pillar-desc">Squat, hinge, press — built to move heavy weight efficiently</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-label">Pillar 04</div>
+          <div class="pillar-title">WOD Strategy</div>
+          <div class="pillar-desc">Pacing, rep schemes, rest — how to actually race a workout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonial -->
+  <div class="oto-testimonial">
+    <div class="stars">
+      <svg viewBox="0 0 12 12"><path d="M6 1l1.4 2.9L11 4.4l-2.5 2.4.6 3.4L6 8.7 2.9 10.2l.6-3.4L1 4.4l3.6-.5L6 1z"/></svg>
+      <svg viewBox="0 0 12 12"><path d="M6 1l1.4 2.9L11 4.4l-2.5 2.4.6 3.4L6 8.7 2.9 10.2l.6-3.4L1 4.4l3.6-.5L6 1z"/></svg>
+      <svg viewBox="0 0 12 12"><path d="M6 1l1.4 2.9L11 4.4l-2.5 2.4.6 3.4L6 8.7 2.9 10.2l.6-3.4L1 4.4l3.6-.5L6 1z"/></svg>
+      <svg viewBox="0 0 12 12"><path d="M6 1l1.4 2.9L11 4.4l-2.5 2.4.6 3.4L6 8.7 2.9 10.2l.6-3.4L1 4.4l3.6-.5L6 1z"/></svg>
+      <svg viewBox="0 0 12 12"><path d="M6 1l1.4 2.9L11 4.4l-2.5 2.4.6 3.4L6 8.7 2.9 10.2l.6-3.4L1 4.4l3.6-.5L6 1z"/></svg>
+    </div>
+    <blockquote>"I signed up just for the double unders. Then I got the full program on this page and honestly it's changed everything. RX'd my first benchmark WOD in 8 months of training. The structure is exactly what I was missing."</blockquote>
+    <cite>Dani M. &mdash; CrossFit athlete, 8 months in</cite>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <button class="btn-yes" id="btn-yes">
+      <div class="btn-yes-text">
+        <span id="btn-yes-label">Start My WOD BOD — $799/yr</span>
+        <span class="btn-yes-sub" id="btn-yes-sub">Billed annually &bull; One-click &bull; Cancel anytime</span>
+      </div>
+      <div class="spinner"></div>
+    </button>
+
+    <div id="upsell-error"></div>
+
+    <button class="btn-no" id="btn-no">
+      No thanks — the Double Under Fix is enough for now. Take me to my program.
+    </button>
+
+    <!-- Guarantee -->
+    <div class="guarantee-row">
+      <div class="guarantee-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="guarantee-text">
+        <strong>Cancel anytime, no questions asked.</strong> Try WOD BOD for 30 days. If it's not right for you, cancel from your billing portal in under 60 seconds — no hoops, no hassle.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="oto-footer">
+  <p>&copy; 2026 WOD BOD METHOD &bull; wodbodmethod.com</p>
+  <p>Questions? <a href="mailto:support@wodbodmethod.com" style="color:rgba(255,255,255,0.3);text-decoration:none;">support@wodbodmethod.com</a></p>
+</footer>
+
+<script>
+(function() {
+  const purchase   = JSON.parse(sessionStorage.getItem('du_purchase') || '{}');
+  const btnYes     = document.getElementById('btn-yes');
+  const btnNo      = document.getElementById('btn-no');
+  const errorDiv   = document.getElementById('upsell-error');
+  const labelEl    = document.getElementById('btn-yes-label');
+  const subEl      = document.getElementById('btn-yes-sub');
+  const cardAnnual = document.getElementById('plan-annual');
+  const cardMontly = document.getElementById('plan-monthly');
+
+  let selectedPlan     = 'annual';
+  let wodbMonthlyPrice = null;
+  let wodbAnnualPrice  = null;
+
+  // Load price IDs from server config
+  fetch('/config')
+    .then(r => r.json())
+    .then(cfg => {
+      wodbMonthlyPrice = cfg.wodbMonthlyPriceId;
+      wodbAnnualPrice  = cfg.wodbAnnualPriceId;
+    })
+    .catch(() => {});
+
+  function updateButton() {
+    if (selectedPlan === 'annual') {
+      labelEl.textContent = 'Start My WOD BOD — $799/yr';
+      subEl.textContent   = 'Billed annually · One-click · Cancel anytime';
+    } else {
+      labelEl.textContent = 'Start My WOD BOD — $97/mo';
+      subEl.textContent   = 'Billed monthly · One-click · Cancel anytime';
+    }
+  }
+
+  // Plan card toggle
+  cardAnnual.addEventListener('click', () => {
+    selectedPlan = 'annual';
+    cardAnnual.classList.add('active');
+    cardMontly.classList.remove('active');
+    updateButton();
+  });
+  cardMontly.addEventListener('click', () => {
+    selectedPlan = 'monthly';
+    cardMontly.classList.add('active');
+    cardAnnual.classList.remove('active');
+    updateButton();
+  });
+
+  function showError(msg) {
+    errorDiv.style.display = 'block';
+    errorDiv.textContent   = msg;
+  }
+
+  // YES — create subscription
+  btnYes.addEventListener('click', async () => {
+    errorDiv.style.display = 'none';
+
+    if (!purchase.customerId || !purchase.paymentMethodId) {
+      showError('Unable to process — no payment method found. Please contact support@wodbodmethod.com.');
+      return;
+    }
+
+    const priceId = selectedPlan === 'annual' ? wodbAnnualPrice : wodbMonthlyPrice;
+    if (!priceId) {
+      showError('Subscription pricing is not available right now. Please contact support@wodbodmethod.com.');
+      return;
+    }
+
+    btnYes.disabled = true;
+    btnYes.classList.add('loading');
+
+    try {
+      const res  = await fetch('/create-subscription', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          customerId:      purchase.customerId,
+          paymentMethodId: purchase.paymentMethodId,
+          priceId,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      purchase.addedUpgrade    = true;
+      purchase.subscriptionPlan = selectedPlan;
+      sessionStorage.setItem('du_purchase', JSON.stringify(purchase));
+      window.location.href = '/thank-you';
+    } catch (err) {
+      showError('There was an issue starting your membership: ' + err.message + '. Please contact support@wodbodmethod.com if this persists.');
+      btnYes.disabled = false;
+      btnYes.classList.remove('loading');
+    }
+  });
+
+  // NO — go to downsell
+  btnNo.addEventListener('click', () => {
+    window.location.href = '/downsell';
+  });
+})();
+</script>
+
+</body>
+</html>
