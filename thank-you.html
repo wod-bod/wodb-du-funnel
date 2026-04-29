@@ -144,39 +144,63 @@
       font-size: 1rem; color: var(--white); flex-shrink: 0;
     }
 
-    /* ── NEXT STEPS ── */
-    .next-steps {
+    /* ── ACCESS CARDS ── */
+    .access-section { margin-bottom: 28px; animation: fadeUp 0.5s 0.5s ease both; }
+    .access-section-label {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); margin-bottom: 14px; display: block; text-align: left;
+    }
+    .access-cards { display: flex; flex-direction: column; gap: 12px; }
+    .access-card {
       background: var(--dark-2);
       border: 1px solid var(--border); border-radius: 14px;
-      overflow: hidden; margin-bottom: 28px;
-      text-align: left;
-      animation: fadeUp 0.5s 0.5s ease both;
+      padding: 20px 22px;
+      display: flex; align-items: center; gap: 16px;
+      text-align: left; text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative; overflow: hidden;
     }
-    .next-steps-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
-      font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em;
+    .access-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--card-accent, var(--orange));
     }
-    .steps-list { padding: 20px 24px; list-style: none; display: flex; flex-direction: column; gap: 16px; }
-    .step-item { display: flex; align-items: flex-start; gap: 14px; }
-    .step-num {
-      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(251,80,0,0.1); border: 1.5px solid rgba(251,80,0,0.3);
+    .access-card:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
+    .access-card-icon {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(255,255,255,0.05);
       display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+    }
+    .access-card-body { flex: 1; min-width: 0; }
+    .access-card-title {
       font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
-      font-size: 0.85rem; color: var(--orange);
+      font-size: 1rem; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--white); margin-bottom: 3px;
     }
-    .step-content { padding-top: 2px; }
-    .step-title {
-      font-size: 0.92rem; font-weight: 600; color: var(--white);
-      margin-bottom: 3px;
+    .access-card-desc { font-size: 0.8rem; color: rgba(255,255,255,0.4); line-height: 1.45; }
+    .access-card-cta {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 7px;
+      background: var(--card-accent, var(--orange));
+      color: var(--white); font-size: 0.78rem; font-weight: 600;
+      text-decoration: none; white-space: nowrap;
+      transition: opacity 0.2s;
     }
-    .step-desc {
-      font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.5;
+    .access-card-cta:hover { opacity: 0.85; }
+    .access-card-cta svg { width: 12px; height: 12px; }
+
+    /* ── SUPPORT CARD ── */
+    .support-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; display: flex; align-items: center; gap: 12px;
+      text-align: left; margin-bottom: 28px;
+      animation: fadeUp 0.5s 0.6s ease both;
     }
-    .step-desc a { color: var(--orange); text-decoration: none; }
-    .step-desc a:hover { text-decoration: underline; }
+    .support-card p { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
+    .support-card a { color: var(--orange); text-decoration: none; }
+    .support-card a:hover { text-decoration: underline; }
 
     /* ── SOCIAL SHARE ── */
     .share-section {
@@ -264,46 +288,18 @@
     </ul>
   </div>
 
-  <!-- Next Steps -->
-  <div class="next-steps">
-    <div class="next-steps-header">What Happens Next</div>
-    <ul class="steps-list">
-      <li class="step-item">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <div class="step-title">Check your email</div>
-          <div class="step-desc">Your login link and receipt are on their way. Check your spam folder if you don't see it within 5 minutes.</div>
-        </div>
-      </li>
-      <li class="step-item">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <div class="step-title">Start with Lesson 1 today</div>
-          <div class="step-desc">Don't overthink it. Open Lesson 1, grab your rope, and do the drill. The first 10 minutes will change how you think about this skill.</div>
-        </div>
-      </li>
-      <li class="step-item">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <div class="step-title">Follow the progression — don't skip ahead</div>
-          <div class="step-desc">Every step is there for a reason. The athletes who see the fastest results are the ones who trust the process and go in order.</div>
-        </div>
-      </li>
-      <li class="step-item" id="step-subscription" style="display:none;">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <div class="step-title">Manage your WOD BOD membership</div>
-          <div class="step-desc">Update payment, view invoices, or cancel anytime at <a id="portal-link" href="https://subscriptions.wodbodmethod.com">subscriptions.wodbodmethod.com</a>.</div>
-        </div>
-      </li>
-      <li class="step-item">
-        <div class="step-num" id="step-support-num">4</div>
-        <div class="step-content">
-          <div class="step-title">Questions? We've got you.</div>
-          <div class="step-desc">Reach out anytime at <a href="mailto:support@wodbodmethod.com">support@wodbodmethod.com</a> — real response from a real person.</div>
-        </div>
-      </li>
-    </ul>
+  <!-- Access Cards -->
+  <div class="access-section">
+    <span class="access-section-label">Your Access Links</span>
+    <div class="access-cards" id="access-cards">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Support -->
+  <div class="support-card">
+    <div style="font-size:1.3rem;flex-shrink:0;">💬</div>
+    <p>Questions? Reach out anytime at <a href="mailto:support@wodbodmethod.com">support@wodbodmethod.com</a> — real response from a real person.</p>
   </div>
 
   <!-- Share Section -->
@@ -330,25 +326,26 @@
 </footer>
 
 <script>
-// ── POPULATE ORDER SUMMARY ────────────────────────
+// ── POPULATE ORDER SUMMARY + ACCESS CARDS ────────
 (function() {
   const purchase = JSON.parse(sessionStorage.getItem('du_purchase') || '{}');
-  const list = document.getElementById('order-items');
 
-  const items = [
+  // ── Order summary items ──
+  const list = document.getElementById('order-items');
+  const orderItems = [
     { name: '6-Week Double Under Fix', price: '$37', dot: 'orange' },
   ];
-  if (purchase.addSpringLoaded) items.push({ name: 'Spring Loaded (Jump Program)', price: '$27', dot: '' });
-  if (purchase.addTracker)      items.push({ name: 'DU Progression Tracker', price: '$7', dot: '' });
-  if (purchase.addedCoaching) items.push({ name: 'Video Coaching 3-Pack', price: '$97', dot: '' });
+  if (purchase.addSpringLoaded)  orderItems.push({ name: 'Spring Loaded (Jump Program)', price: '$27', dot: '' });
+  if (purchase.addTracker)       orderItems.push({ name: 'DU Progression Tracker', price: '$7', dot: '' });
+  if (purchase.addedCoaching)    orderItems.push({ name: 'Video Coaching 3-Pack', price: '$97', dot: '' });
   if (purchase.addedUpgrade) {
     const plan  = purchase.subscriptionPlan === 'monthly' ? 'Monthly' : 'Annual';
     const price = purchase.subscriptionPlan === 'monthly' ? '$97/mo'  : '$799/yr';
-    items.push({ name: 'WOD BOD Method — ' + plan + ' Membership', price, dot: '' });
+    orderItems.push({ name: 'RX Method — ' + plan + ' Membership', price, dot: '' });
   }
-  if (purchase.addedRxBlueprint) items.push({ name: 'RX Fast-Track Blueprint', price: '$27', dot: '' });
+  if (purchase.addedRxBlueprint) orderItems.push({ name: 'RX Starter Kit', price: '$27', dot: '' });
 
-  items.forEach(item => {
+  orderItems.forEach(item => {
     const li = document.createElement('li');
     li.innerHTML = `
       <span class="item-name">
@@ -360,18 +357,108 @@
     list.appendChild(li);
   });
 
-  // Show subscription management step if they bought WOD BOD
-  if (purchase.addedUpgrade && purchase.customerId) {
-    const stepEl   = document.getElementById('step-subscription');
-    const portalEl = document.getElementById('portal-link');
-    const numEl    = document.getElementById('step-support-num');
-    if (stepEl) {
-      stepEl.style.display = '';
-      if (portalEl) {
-        portalEl.href = 'https://subscriptions.wodbodmethod.com?customer=' + encodeURIComponent(purchase.customerId);
-      }
-    }
-    if (numEl) numEl.textContent = '5';
+  // ── Access cards ──
+  const container = document.getElementById('access-cards');
+
+  function makeCard({ accent, icon, title, desc, ctaText, ctaHref }) {
+    const a = document.createElement('a');
+    a.className = 'access-card';
+    a.href = ctaHref;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.style.setProperty('--card-accent', accent);
+    a.innerHTML = `
+      <div class="access-card-icon">${icon}</div>
+      <div class="access-card-body">
+        <div class="access-card-title">${title}</div>
+        <div class="access-card-desc">${desc}</div>
+      </div>
+      <span class="access-card-cta" style="background:${accent}">
+        ${ctaText}
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M6 2l4 4-4 4"/></svg>
+      </span>
+    `;
+    return a;
+  }
+
+  // 1. Always: 6-Week DU Fix
+  container.appendChild(makeCard({
+    accent: '#fb5000',
+    icon: '🎯',
+    title: '6-Week Double Under Fix',
+    desc: 'Your course is live inside the WOD BOD Collective. Check your email for your Circle invite.',
+    ctaText: 'Join the Community',
+    ctaHref: 'https://wod-bod-collective.circle.so',
+  }));
+
+  // 2. Spring Loaded
+  if (purchase.addSpringLoaded) {
+    container.appendChild(makeCard({
+      accent: '#00E5C0',
+      icon: '🦘',
+      title: 'Spring Loaded Jump Program',
+      desc: 'Access your complete jump training program instantly on Canva.',
+      ctaText: 'Open Program',
+      ctaHref: 'https://canva.link/6igcmmwca53gwra',
+    }));
+  }
+
+  // 3. DU Progression Tracker
+  if (purchase.addTracker && purchase.trackerUrl) {
+    container.appendChild(makeCard({
+      accent: '#7c3aed',
+      icon: '📊',
+      title: 'DU Progression Tracker',
+      desc: 'Your personal tracker is ready. Bookmark this link — it\'s unique to you.',
+      ctaText: 'Open My Tracker',
+      ctaHref: purchase.trackerUrl,
+    }));
+  }
+
+  // 4. RX Method Membership
+  if (purchase.addedUpgrade) {
+    const portalHref = purchase.customerId
+      ? 'https://subscriptions.wodbodmethod.com?customer=' + encodeURIComponent(purchase.customerId)
+      : 'https://subscriptions.wodbodmethod.com';
+    container.appendChild(makeCard({
+      accent: '#f59e0b',
+      icon: '🏆',
+      title: 'RX Method Membership',
+      desc: 'Your Circle invite is on its way — all RX Method spaces are now unlocked. Manage your plan anytime.',
+      ctaText: 'Visit Community',
+      ctaHref: 'https://wod-bod-collective.circle.so',
+    }));
+    // Subscription management card
+    const mgmt = document.createElement('a');
+    mgmt.className = 'access-card';
+    mgmt.href = portalHref;
+    mgmt.target = '_blank';
+    mgmt.rel = 'noopener';
+    mgmt.style.setProperty('--card-accent', '#555');
+    mgmt.innerHTML = `
+      <div class="access-card-icon">⚙️</div>
+      <div class="access-card-body">
+        <div class="access-card-title">Manage Membership</div>
+        <div class="access-card-desc">Update payment, view invoices, or cancel anytime.</div>
+      </div>
+      <span class="access-card-cta" style="background:#333;border:1px solid rgba(255,255,255,0.1)">
+        Billing Portal
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M6 2l4 4-4 4"/></svg>
+      </span>
+    `;
+    container.appendChild(mgmt);
+  }
+
+  // 5. RX Starter Kit (downsell)
+  if (purchase.addedRxBlueprint) {
+    container.appendChild(makeCard({
+      accent: '#10b981',
+      icon: '💪',
+      title: 'RX Starter Kit',
+      desc: 'Check your email for your Circle invite — your RX Starter Kit spaces will be unlocked shortly.',
+      ctaText: 'Visit Community',
+      ctaHref: 'https://wod-bod-collective.circle.so',
+    }));
   }
 })();
 

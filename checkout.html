@@ -806,6 +806,7 @@
               paymentIntentId,
               email,
               name: `${firstName} ${lastName}`,
+              addTracker,
             }),
           });
           const cpData = await cpRes.json();
@@ -824,6 +825,7 @@
           paymentMethodId,
           addSpringLoaded,
           addTracker,
+          trackerUrl: (typeof cpData !== 'undefined' && cpData.trackerUrl) ? cpData.trackerUrl : null,
         }));
         window.location.href = '/upsell-1';
       }

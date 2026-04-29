@@ -1,4 +1,5 @@
-const path = require('path');
+const path   = require('path');
+const crypto = require('crypto');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const stripe  = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -279,7 +280,7 @@ app.post('/update-payment-intent', async (req, res) => {
 // Called after initial purchase succeeds — saves PM to a Customer for upsell reuse
 app.post('/confirm-purchase', async (req, res) => {
   try {
-    const { paymentIntentId, email, name } = req.body;
+    const { paymentIntentId, email, name, addTracker } = req.body;
     if (!paymentIntentId) throw new Error('paymentIntentId required');
 
     const pi   = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -302,7 +303,16 @@ app.post('/confirm-purchase', async (req, res) => {
       invoice_settings: { default_payment_method: pmId },
     });
 
-    res.json({ customerId: customer.id, paymentMethodId: pmId });
+    // Generate unique tracker URL if they bought the DU Progression Tracker
+    let trackerUrl = null;
+    if (addTracker && email) {
+      const norm  = String(email).trim().toLowerCase();
+      const token = crypto.createHmac('sha256', process.env.TRACKER_TOKEN_SECRET || 'dev')
+        .update(norm).digest('hex').slice(0, 16);
+      trackerUrl = `https://dutracker.wodbodmethod.com/?u=${token}`;
+    }
+
+    res.json({ customerId: customer.id, paymentMethodId: pmId, trackerUrl });
   } catch (err) {
     console.error('confirm-purchase error:', err.message);
     res.status(400).json({ error: err.message });
