@@ -380,7 +380,7 @@ app.post('/confirm-purchase', async (req, res) => {
 
     // Tag in Mailchimp (fire-and-forget)
     if (email) {
-      const mcTags = ['du-fix'];
+      const mcTags = ['Purchased DU Masterclass'];
       if (addSpringLoaded) mcTags.push('spring-loaded');
       if (addTracker)      mcTags.push('du-tracker');
       mailchimpTag(email, mcTags).catch(err =>
@@ -459,7 +459,7 @@ app.post('/create-subscription', async (req, res) => {
 
     // Tag in Mailchimp (fire-and-forget)
     stripe.customers.retrieve(customerId).then(cust => {
-      if (cust.email) mailchimpTag(cust.email, ['rx-method']).catch(() => {});
+      if (cust.email) mailchimpTag(cust.email, ['RX Inner Circle Member']).catch(() => {});
     }).catch(() => {});
 
     res.json({ success: true, subscriptionId: subscription.id, status: subscription.status });
