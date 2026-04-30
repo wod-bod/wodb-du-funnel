@@ -386,9 +386,9 @@
     accent: '#fb5000',
     icon: '🎯',
     title: '6-Week Double Under Fix',
-    desc: 'Your course is live inside the WOD BOD Collective. Check your email for your Circle invite.',
+    desc: 'Your course is live in the WOD BOD Collective. Click to jump in and get started.',
     ctaText: 'Join the Community',
-    ctaHref: 'https://wod-bod-collective.circle.so',
+    ctaHref: 'https://wod-bod-collective.circle.so/c/double-under-course/',
   }));
 
   // 2. Spring Loaded
@@ -404,14 +404,14 @@
   }
 
   // 3. DU Progression Tracker
-  if (purchase.addTracker && purchase.trackerUrl) {
+  if (purchase.addTracker) {
     container.appendChild(makeCard({
       accent: '#7c3aed',
       icon: '📊',
       title: 'DU Progression Tracker',
       desc: 'Your personal tracker is ready. Bookmark this link — it\'s unique to you.',
       ctaText: 'Open My Tracker',
-      ctaHref: purchase.trackerUrl,
+      ctaHref: purchase.trackerUrl || 'https://dutracker.wodbodmethod.com',
     }));
   }
 
@@ -455,7 +455,7 @@
       accent: '#10b981',
       icon: '💪',
       title: 'RX Starter Kit',
-      desc: 'Check your email for your Circle invite — your RX Starter Kit spaces will be unlocked shortly.',
+      desc: 'Your RX Starter Kit spaces are unlocked. Dive into Spencer\'s full technique library — gymnastics, Oly lifting, and mobility.',
       ctaText: 'Visit Community',
       ctaHref: 'https://wod-bod-collective.circle.so',
     }));
