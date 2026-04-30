@@ -8,7 +8,7 @@ const stripe  = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const CIRCLE_API_TOKEN    = process.env.CIRCLE_API_TOKEN;
 const CIRCLE_COMMUNITY_ID = 248627; // WOD BOD COLLECTIVE
 
-// All spaces inside the "RX Method" space group
+// All spaces inside the "RX Method" space group (subscription)
 const RX_METHOD_SPACE_IDS = [
   2004118, // Getting Started
   2273591, // Questions
@@ -20,6 +20,19 @@ const RX_METHOD_SPACE_IDS = [
   2002061, // Olympic Lifting Mastery
   2177840, // Performance Stack
   2182485, // Pain Fix
+];
+
+// Spaces unlocked by the 6-Week Double Under Fix (one-time, main product)
+const DU_FIX_SPACE_IDS = [
+  1980543, // 6 Wk DU Fix
+];
+
+// Spaces unlocked by the RX Starter Kit (one-time downsell)
+const RX_STARTER_KIT_SPACE_IDS = [
+  2182485, // Mobility Lab
+  1563581, // Gymnastics Kickstarter
+  2002272, // Oly Overhaul
+  1980533, // Community Chat
 ];
 
 async function circleRequest(method, endpoint, body) {
@@ -48,6 +61,23 @@ async function circleGrantAccess(email) {
   });
   // Add to each RX Method space
   for (const space_id of RX_METHOD_SPACE_IDS) {
+    await circleRequest('POST', 'space_members', {
+      community_id: CIRCLE_COMMUNITY_ID,
+      space_id,
+      email,
+    });
+  }
+}
+
+// Add a member to the community + a specific set of spaces (for one-time purchases)
+async function circleAddToSpaces(email, spaceIds) {
+  console.log(`  Circle: adding ${email} to community + ${spaceIds.length} space(s)`);
+  await circleRequest('POST', 'community_members', {
+    community_id: CIRCLE_COMMUNITY_ID,
+    email,
+    suppress_notifications: false,
+  });
+  for (const space_id of spaceIds) {
     await circleRequest('POST', 'space_members', {
       community_id: CIRCLE_COMMUNITY_ID,
       space_id,
@@ -312,6 +342,13 @@ app.post('/confirm-purchase', async (req, res) => {
       trackerUrl = `https://dutracker.wodbodmethod.com/?u=${token}`;
     }
 
+    // Grant Circle access to 6-Week DU Fix space (fire-and-forget — non-blocking)
+    if (email) {
+      circleAddToSpaces(email, DU_FIX_SPACE_IDS).catch(err =>
+        console.error('Circle DU Fix access error:', err.message)
+      );
+    }
+
     res.json({ customerId: customer.id, paymentMethodId: pmId, trackerUrl });
   } catch (err) {
     console.error('confirm-purchase error:', err.message);
@@ -335,6 +372,17 @@ app.post('/charge-upsell', async (req, res) => {
       off_session:    true,
       metadata: { product: UPSELL_NAMES[product], upsell: 'true' },
     });
+
+    // Grant Circle access for RX Starter Kit (fire-and-forget)
+    if (product === 'rxBlueprint') {
+      stripe.customers.retrieve(customerId).then(cust => {
+        if (cust.email) {
+          circleAddToSpaces(cust.email, RX_STARTER_KIT_SPACE_IDS).catch(err =>
+            console.error('Circle RX Starter Kit access error:', err.message)
+          );
+        }
+      }).catch(() => {});
+    }
 
     res.json({ success: true, paymentIntentId: pi.id });
   } catch (err) {
