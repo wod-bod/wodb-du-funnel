@@ -388,9 +388,9 @@ app.post('/confirm-purchase', async (req, res) => {
     if (email) {
       const mcTags   = ['Purchased DU Masterclass'];
       const mcMerge  = {};
-      if (addSpringLoaded) { mcTags.push('spring-loaded');  mcMerge.BOUGHT_SL      = 'yes'; }
-      if (addTracker)      { mcTags.push('du-tracker');     mcMerge.BOUGHT_TRACKER = 'yes'; }
-      if (addTracker && trackerUrl) { mcMerge.TRACKER_URL = trackerUrl; }
+      if (addSpringLoaded) { mcTags.push('spring-loaded'); mcMerge.BOUGHT_SL  = 'yes'; }
+      if (addTracker)      { mcTags.push('du-tracker');   mcMerge.TRACKER    = 'yes'; }
+      if (addTracker && trackerUrl) { mcMerge.TRACK_URL = trackerUrl; }
       mailchimpTag(email, mcTags, mcMerge).catch(err =>
         console.error('Mailchimp tag error:', err.message)
       );
@@ -428,7 +428,7 @@ app.post('/charge-upsell', async (req, res) => {
           circleAddToSpaces(cust.email, RX_STARTER_KIT_SPACE_IDS).catch(err =>
             console.error('Circle RX Starter Kit error:', err.message)
           );
-          mailchimpTag(cust.email, ['rx-starter-kit'], { BOUGHT_RXKIT: 'yes' }).catch(() => {});
+          mailchimpTag(cust.email, ['rx-starter-kit'], { RXKIT: 'yes' }).catch(() => {});
         }
         if (product === 'coaching') {
           mailchimpTag(cust.email, ['video-coaching'], {}).catch(() => {});
