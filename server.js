@@ -17,7 +17,7 @@ async function mailchimpTag(email, tags, mergeFields = {}) {
   const auth = 'Basic ' + Buffer.from(`anystring:${MC_API_KEY}`).toString('base64');
 
   // Upsert member + set merge fields in one call
-  await fetch(`${base}/${hash}`, {
+  const upsertRes = await fetch(`${base}/${hash}`, {
     method: 'PUT',
     headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -26,17 +26,25 @@ async function mailchimpTag(email, tags, mergeFields = {}) {
       merge_fields:  mergeFields,
     }),
   });
+  if (!upsertRes.ok) {
+    const body = await upsertRes.text();
+    console.error(`  Mailchimp upsert error ${upsertRes.status}: ${body}`);
+  }
 
   // Apply tags
   if (tags.length) {
-    await fetch(`${base}/${hash}/tags`, {
+    const tagRes = await fetch(`${base}/${hash}/tags`, {
       method: 'POST',
       headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
       body: JSON.stringify({ tags: tags.map(name => ({ name, status: 'active' })) }),
     });
+    if (!tagRes.ok) {
+      const body = await tagRes.text();
+      console.error(`  Mailchimp tags error ${tagRes.status}: ${body}`);
+    }
   }
 
-  console.log(`  Mailchimp: ${norm} → tags [${tags.join(', ')}] merge ${JSON.stringify(mergeFields)}`);
+  console.log(`  Mailchimp OK: ${norm} → tags [${tags.join(', ')}] merge ${JSON.stringify(mergeFields)}`);
 }
 
 // ── CIRCLE CONFIG ────────────────────────────────────
