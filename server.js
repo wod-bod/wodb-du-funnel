@@ -9,28 +9,34 @@ const MC_API_KEY = process.env.MAILCHIMP_API_KEY;
 const MC_LIST_ID = process.env.MAILCHIMP_LIST_ID;
 const MC_SERVER  = (MC_API_KEY || '').split('-').pop(); // 'us14'
 
-async function mailchimpTag(email, tags) {
-  if (!MC_API_KEY || !MC_LIST_ID || !email || !tags.length) return;
+async function mailchimpTag(email, tags, mergeFields = {}) {
+  if (!MC_API_KEY || !MC_LIST_ID || !email) return;
   const norm = String(email).trim().toLowerCase();
   const hash = crypto.createHash('md5').update(norm).digest('hex');
   const base = `https://${MC_SERVER}.api.mailchimp.com/3.0/lists/${MC_LIST_ID}/members`;
   const auth = 'Basic ' + Buffer.from(`anystring:${MC_API_KEY}`).toString('base64');
 
-  // Upsert member (creates if new, updates if existing — never overwrites status)
+  // Upsert member + set merge fields in one call
   await fetch(`${base}/${hash}`, {
     method: 'PUT',
     headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email_address: norm, status_if_new: 'subscribed' }),
+    body: JSON.stringify({
+      email_address: norm,
+      status_if_new: 'subscribed',
+      merge_fields:  mergeFields,
+    }),
   });
 
   // Apply tags
-  await fetch(`${base}/${hash}/tags`, {
-    method: 'POST',
-    headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tags: tags.map(name => ({ name, status: 'active' })) }),
-  });
+  if (tags.length) {
+    await fetch(`${base}/${hash}/tags`, {
+      method: 'POST',
+      headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tags: tags.map(name => ({ name, status: 'active' })) }),
+    });
+  }
 
-  console.log(`  Mailchimp tagged ${norm}: ${tags.join(', ')}`);
+  console.log(`  Mailchimp: ${norm} → tags [${tags.join(', ')}] merge ${JSON.stringify(mergeFields)}`);
 }
 
 // ── CIRCLE CONFIG ────────────────────────────────────
@@ -378,12 +384,14 @@ app.post('/confirm-purchase', async (req, res) => {
       );
     }
 
-    // Tag in Mailchimp (fire-and-forget)
+    // Tag in Mailchimp + set merge fields (fire-and-forget)
     if (email) {
-      const mcTags = ['Purchased DU Masterclass'];
-      if (addSpringLoaded) mcTags.push('spring-loaded');
-      if (addTracker)      mcTags.push('du-tracker');
-      mailchimpTag(email, mcTags).catch(err =>
+      const mcTags   = ['Purchased DU Masterclass'];
+      const mcMerge  = {};
+      if (addSpringLoaded) { mcTags.push('spring-loaded');  mcMerge.BOUGHT_SL      = 'yes'; }
+      if (addTracker)      { mcTags.push('du-tracker');     mcMerge.BOUGHT_TRACKER = 'yes'; }
+      if (addTracker && trackerUrl) { mcMerge.TRACKER_URL = trackerUrl; }
+      mailchimpTag(email, mcTags, mcMerge).catch(err =>
         console.error('Mailchimp tag error:', err.message)
       );
     }
@@ -420,10 +428,10 @@ app.post('/charge-upsell', async (req, res) => {
           circleAddToSpaces(cust.email, RX_STARTER_KIT_SPACE_IDS).catch(err =>
             console.error('Circle RX Starter Kit error:', err.message)
           );
-          mailchimpTag(cust.email, ['rx-starter-kit']).catch(() => {});
+          mailchimpTag(cust.email, ['rx-starter-kit'], { BOUGHT_RXKIT: 'yes' }).catch(() => {});
         }
         if (product === 'coaching') {
-          mailchimpTag(cust.email, ['video-coaching']).catch(() => {});
+          mailchimpTag(cust.email, ['video-coaching'], {}).catch(() => {});
         }
       }).catch(() => {});
     }
@@ -459,7 +467,7 @@ app.post('/create-subscription', async (req, res) => {
 
     // Tag in Mailchimp (fire-and-forget)
     stripe.customers.retrieve(customerId).then(cust => {
-      if (cust.email) mailchimpTag(cust.email, ['RX Inner Circle Member']).catch(() => {});
+      if (cust.email) mailchimpTag(cust.email, ['RX Inner Circle Member'], { BOUGHT_RX: 'yes' }).catch(() => {});
     }).catch(() => {});
 
     res.json({ success: true, subscriptionId: subscription.id, status: subscription.status });
