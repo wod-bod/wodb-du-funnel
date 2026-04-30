@@ -4,6 +4,35 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const stripe  = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// ── MAILCHIMP CONFIG ─────────────────────────────────
+const MC_API_KEY = process.env.MAILCHIMP_API_KEY;
+const MC_LIST_ID = process.env.MAILCHIMP_LIST_ID;
+const MC_SERVER  = (MC_API_KEY || '').split('-').pop(); // 'us14'
+
+async function mailchimpTag(email, tags) {
+  if (!MC_API_KEY || !MC_LIST_ID || !email || !tags.length) return;
+  const norm = String(email).trim().toLowerCase();
+  const hash = crypto.createHash('md5').update(norm).digest('hex');
+  const base = `https://${MC_SERVER}.api.mailchimp.com/3.0/lists/${MC_LIST_ID}/members`;
+  const auth = 'Basic ' + Buffer.from(`anystring:${MC_API_KEY}`).toString('base64');
+
+  // Upsert member (creates if new, updates if existing — never overwrites status)
+  await fetch(`${base}/${hash}`, {
+    method: 'PUT',
+    headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email_address: norm, status_if_new: 'subscribed' }),
+  });
+
+  // Apply tags
+  await fetch(`${base}/${hash}/tags`, {
+    method: 'POST',
+    headers: { 'Authorization': auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tags: tags.map(name => ({ name, status: 'active' })) }),
+  });
+
+  console.log(`  Mailchimp tagged ${norm}: ${tags.join(', ')}`);
+}
+
 // ── CIRCLE CONFIG ────────────────────────────────────
 const CIRCLE_API_TOKEN    = process.env.CIRCLE_API_TOKEN;
 const CIRCLE_COMMUNITY_ID = 248627; // WOD BOD COLLECTIVE
@@ -310,7 +339,7 @@ app.post('/update-payment-intent', async (req, res) => {
 // Called after initial purchase succeeds — saves PM to a Customer for upsell reuse
 app.post('/confirm-purchase', async (req, res) => {
   try {
-    const { paymentIntentId, email, name, addTracker } = req.body;
+    const { paymentIntentId, email, name, addTracker, addSpringLoaded } = req.body;
     if (!paymentIntentId) throw new Error('paymentIntentId required');
 
     const pi   = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -349,6 +378,16 @@ app.post('/confirm-purchase', async (req, res) => {
       );
     }
 
+    // Tag in Mailchimp (fire-and-forget)
+    if (email) {
+      const mcTags = ['du-fix'];
+      if (addSpringLoaded) mcTags.push('spring-loaded');
+      if (addTracker)      mcTags.push('du-tracker');
+      mailchimpTag(email, mcTags).catch(err =>
+        console.error('Mailchimp tag error:', err.message)
+      );
+    }
+
     res.json({ customerId: customer.id, paymentMethodId: pmId, trackerUrl });
   } catch (err) {
     console.error('confirm-purchase error:', err.message);
@@ -373,13 +412,18 @@ app.post('/charge-upsell', async (req, res) => {
       metadata: { product: UPSELL_NAMES[product], upsell: 'true' },
     });
 
-    // Grant Circle access for RX Starter Kit (fire-and-forget)
-    if (product === 'rxBlueprint') {
+    // Circle + Mailchimp for upsells (fire-and-forget)
+    if (product === 'rxBlueprint' || product === 'coaching') {
       stripe.customers.retrieve(customerId).then(cust => {
-        if (cust.email) {
+        if (!cust.email) return;
+        if (product === 'rxBlueprint') {
           circleAddToSpaces(cust.email, RX_STARTER_KIT_SPACE_IDS).catch(err =>
-            console.error('Circle RX Starter Kit access error:', err.message)
+            console.error('Circle RX Starter Kit error:', err.message)
           );
+          mailchimpTag(cust.email, ['rx-starter-kit']).catch(() => {});
+        }
+        if (product === 'coaching') {
+          mailchimpTag(cust.email, ['video-coaching']).catch(() => {});
         }
       }).catch(() => {});
     }
@@ -412,6 +456,11 @@ app.post('/create-subscription', async (req, res) => {
       expand:           ['latest_invoice.payment_intent'],
       metadata:         { source: 'double-under-fix-upsell' },
     });
+
+    // Tag in Mailchimp (fire-and-forget)
+    stripe.customers.retrieve(customerId).then(cust => {
+      if (cust.email) mailchimpTag(cust.email, ['rx-method']).catch(() => {});
+    }).catch(() => {});
 
     res.json({ success: true, subscriptionId: subscription.id, status: subscription.status });
   } catch (err) {
