@@ -368,13 +368,21 @@ app.post('/confirm-purchase', async (req, res) => {
       customer = await stripe.customers.create({ email: email || undefined, name: name || undefined });
     }
 
+    // Attach PM to customer (non-fatal — upsells degrade gracefully if this fails)
+    let pmIdToUse = pmId;
     try {
       await stripe.paymentMethods.attach(pmId, { customer: customer.id });
-    } catch (_) { /* already attached */ }
-
-    await stripe.customers.update(customer.id, {
-      invoice_settings: { default_payment_method: pmId },
-    });
+      await stripe.customers.update(customer.id, {
+        invoice_settings: { default_payment_method: pmId },
+      });
+    } catch (attachErr) {
+      console.warn('PM attach warning (non-fatal):', attachErr.message);
+      // Fall back to any existing card on this customer for future upsells
+      try {
+        const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
+        if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
+      } catch (_) {}
+    }
 
     // Generate unique tracker URL if they bought the DU Progression Tracker
     let trackerUrl = null;
@@ -404,7 +412,7 @@ app.post('/confirm-purchase', async (req, res) => {
       );
     }
 
-    res.json({ customerId: customer.id, paymentMethodId: pmId, trackerUrl });
+    res.json({ customerId: customer.id, paymentMethodId: pmIdToUse, trackerUrl });
   } catch (err) {
     console.error('confirm-purchase error:', err.message);
     res.status(400).json({ error: err.message });
