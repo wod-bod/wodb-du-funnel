@@ -129,6 +129,51 @@ async function circleAddToSpaces(email, spaceIds) {
   }
 }
 
+async function circleSendWelcomeDM(email, firstName) {
+  const name = firstName || 'there';
+
+  // Build message paragraphs in ProseMirror format
+  const lines = [
+    `Hey ${name}! Super excited to have you in the DU Fix.`,
+    `Here's a couple things that have helped our most successful members:`,
+    `1. Finding your rope length (even if you've got double unders) can change things REAL FAST. Here's the link for that one.`,
+    `2. Always schedule what lessons you are going to watch before the week starts. It sets the intention that you'll actually watch them and do the drills.`,
+    `3. HAVE FUN! Our members that enjoy the process and ask questions always see great results. But the more you let yourself get frustrated, the worse things go, especially with high skill movements like double unders.`,
+    `If you have any questions for me right now feel free to message me 😊`,
+    `I'm here for you ${name},`,
+    `Spencer`,
+  ];
+
+  const content = lines.map(text => ({
+    type: 'paragraph',
+    content: [{ type: 'text', text }],
+  }));
+
+  const res = await fetch('https://app.circle.so/api/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${CIRCLE_API_TOKEN}`,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({
+      community_id:   CIRCLE_COMMUNITY_ID,
+      user_email:     process.env.CIRCLE_ADMIN_EMAIL,
+      user_emails:    [email],
+      rich_text_body: {
+        body: { type: 'doc', content },
+        circle_ios_fallback_text: `Hey ${name}! Super excited to have you in the DU Fix.`,
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.warn(`  Circle DM error ${res.status}: ${text}`);
+  } else {
+    console.log(`  Circle DM sent → ${email}`);
+  }
+}
+
 async function circleRevokeAccess(email) {
   console.log(`  Revoking Circle access → ${email}`);
   await circleRequest('DELETE', 'community_members', {
@@ -397,8 +442,12 @@ app.post('/confirm-purchase', async (req, res) => {
 
     // Grant Circle access to 6-Week DU Fix space (fire-and-forget — non-blocking)
     if (email) {
+      const firstName = (name || '').split(' ')[0] || '';
       circleAddToSpaces(email, DU_FIX_SPACE_IDS).catch(err =>
         console.error('Circle DU Fix access error:', err.message)
+      );
+      circleSendWelcomeDM(email, firstName).catch(err =>
+        console.error('Circle DM error:', err.message)
       );
     }
 
