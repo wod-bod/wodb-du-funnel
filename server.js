@@ -421,6 +421,28 @@ app.post('/confirm-purchase', async (req, res) => {
   }
 });
 
+// Validate a promo/coupon code and return discount info
+app.post('/apply-coupon', async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) throw new Error('No code provided');
+
+    const coupon = await stripe.coupons.retrieve(code.toUpperCase());
+    if (!coupon.valid) throw new Error('This code is expired or no longer valid.');
+
+    res.json({
+      valid:      true,
+      percentOff: coupon.percent_off || null,
+      amountOff:  coupon.amount_off  || null,
+    });
+  } catch (err) {
+    const msg = err.raw?.code === 'resource_missing'
+      ? 'Invalid promo code.'
+      : (err.message || 'Invalid promo code.');
+    res.status(400).json({ error: msg });
+  }
+});
+
 // One-click charge for one-time upsells (coaching, rxBlueprint)
 app.post('/charge-upsell', async (req, res) => {
   try {
@@ -447,7 +469,7 @@ app.post('/charge-upsell', async (req, res) => {
         const token = crypto.createHmac('sha256', process.env.TRACKER_TOKEN_SECRET || 'dev')
           .update(norm).digest('hex').slice(0, 16);
         diagnosticUrl = `https://dudiagnostic.wodbodmethod.com/?u=${token}`;
-        mailchimpTag(cust.email, ['du-diagnostic'], { DIAG_URL: diagnosticUrl }).catch(() => {});
+        mailchimpTag(cust.email, ['du-diagnostic'], { DIAG: 'yes', DIAG_URL: diagnosticUrl }).catch(() => {});
       }
     }
 

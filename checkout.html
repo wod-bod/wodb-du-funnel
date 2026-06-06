@@ -333,6 +333,46 @@
     .pay-btn.loading .btn-lock { display: none; }
     .pay-btn.loading .spinner { display: block; }
 
+    /* ── PROMO CODE ── */
+    .promo-row {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .promo-row input {
+      flex: 1; padding: 12px 14px;
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      outline: none; transition: border-color 0.2s;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .promo-row input::placeholder { color: rgba(255,255,255,0.2); text-transform: none; letter-spacing: 0; }
+    .promo-row input:focus { border-color: rgba(251,80,0,0.5); }
+    .promo-apply-btn {
+      padding: 12px 18px; border-radius: 6px; border: 1px solid rgba(251,80,0,0.4);
+      background: transparent; color: var(--orange);
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: background 0.2s, border-color 0.2s;
+    }
+    .promo-apply-btn:hover { background: rgba(251,80,0,0.08); border-color: var(--orange); }
+    .promo-apply-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #promo-feedback {
+      font-size: 0.82rem; margin-top: -10px; margin-bottom: 10px; padding: 8px 12px;
+      border-radius: 6px; display: none;
+    }
+    #promo-feedback.success {
+      background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25);
+      color: #86efac;
+    }
+    #promo-feedback.error {
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+    }
+    .discount-row {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 8px 0; font-size: 0.85rem; color: #86efac;
+    }
+    .discount-row.visible { display: flex; }
+
     /* Error message */
     #payment-error {
       display: none; margin-top: 12px;
@@ -527,12 +567,20 @@
         <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
       </div>
 
+      <!-- Promo Code -->
+      <div class="promo-row">
+        <input type="text" id="promo-input" placeholder="Promo code" autocomplete="off" />
+        <button type="button" class="promo-apply-btn" id="promo-apply-btn">Apply</button>
+      </div>
+      <div id="promo-feedback"></div>
+
       <!-- Stripe Payment Element -->
-      <div class="form-group">
+      <div class="form-group" id="card-details-group">
         <label>Card Details</label>
         <div class="stripe-element-wrap" id="stripe-element-wrap">
           <div id="payment-element"></div>
         </div>
+      </div>
       </div>
 
       <!-- ── ORDER BUMPS ── -->
@@ -574,6 +622,12 @@
             </div>
           </label>
         </div>
+      </div>
+
+      <!-- Discount row (shown when promo applied) -->
+      <div class="discount-row" id="discount-row">
+        <span>🎉 Promo applied</span>
+        <span id="discount-amount" style="font-weight:600;"></span>
       </div>
 
       <!-- Total -->
@@ -636,21 +690,90 @@
   const bumpSpring    = document.getElementById('bump-spring');
   const bumpTracker   = document.getElementById('bump-tracker');
   const summaryPrice  = document.getElementById('summary-price');
+  const promoInput    = document.getElementById('promo-input');
+  const promoApplyBtn = document.getElementById('promo-apply-btn');
+  const promoFeedback = document.getElementById('promo-feedback');
+  const discountRow   = document.getElementById('discount-row');
+  const discountAmt   = document.getElementById('discount-amount');
+  const cardGroup     = document.getElementById('card-details-group');
+
+  // ── COUPON STATE ──────────────────────────────────
+  let appliedCoupon = null; // { code, percentOff, amountOff }
+  let isFreeOrder   = false;
 
   // ── HELPERS ───────────────────────────────────────
-  function calcTotal() {
+  function calcSubtotal() {
     let t = PRICES.main;
     if (addSpringLoaded) t += PRICES.springLoaded;
     if (addTracker)      t += PRICES.tracker;
     return t;
   }
 
-  function updateUI() {
-    const total = calcTotal();
-    totalDisplay.textContent = `$${total}`;
-    btnText.textContent      = `Complete Purchase — $${total}`;
-    summaryPrice.textContent = `$${total}`;
+  function calcTotal() {
+    const sub = calcSubtotal();
+    if (!appliedCoupon) return sub;
+    if (appliedCoupon.percentOff) return Math.max(0, Math.round(sub * (1 - appliedCoupon.percentOff / 100)));
+    if (appliedCoupon.amountOff)  return Math.max(0, sub - Math.round(appliedCoupon.amountOff / 100));
+    return sub;
   }
+
+  function updateUI() {
+    const sub   = calcSubtotal();
+    const total = calcTotal();
+    isFreeOrder = total === 0;
+
+    totalDisplay.textContent = isFreeOrder ? 'FREE' : `$${total}`;
+    summaryPrice.textContent = isFreeOrder ? 'FREE' : `$${total}`;
+    btnText.textContent      = isFreeOrder ? 'Complete Order — Free' : `Complete Purchase — $${total}`;
+
+    // Show/hide card details
+    cardGroup.style.display = isFreeOrder ? 'none' : 'block';
+
+    // Discount row
+    if (appliedCoupon) {
+      const saved = sub - total;
+      discountAmt.textContent = `-$${saved}`;
+      discountRow.classList.add('visible');
+    } else {
+      discountRow.classList.remove('visible');
+    }
+  }
+
+  // ── PROMO CODE ────────────────────────────────────
+  promoApplyBtn.addEventListener('click', async () => {
+    const code = promoInput.value.trim().toUpperCase();
+    if (!code) return;
+
+    promoApplyBtn.disabled = true;
+    promoFeedback.style.display = 'none';
+    promoFeedback.className = '';
+
+    try {
+      const res  = await fetch('/apply-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, paymentIntentId, addSpringLoaded, addTracker }),
+      });
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error);
+
+      appliedCoupon = { code, percentOff: data.percentOff, amountOff: data.amountOff };
+      promoFeedback.textContent   = data.percentOff === 100 ? '✓ 100% off applied — your order is free!' : `✓ Code applied — ${data.percentOff ? data.percentOff + '% off' : '$' + (data.amountOff / 100) + ' off'}`;
+      promoFeedback.className     = 'success';
+      promoFeedback.style.display = 'block';
+      promoInput.disabled         = true;
+      promoApplyBtn.disabled      = true;
+      promoApplyBtn.textContent   = 'Applied ✓';
+
+      updateUI();
+    } catch (err) {
+      promoFeedback.textContent   = err.message || 'Invalid promo code.';
+      promoFeedback.className     = 'error';
+      promoFeedback.style.display = 'block';
+      promoApplyBtn.disabled      = false;
+    }
+  });
 
   function showError(msg) {
     errorDiv.style.display = 'block';
@@ -777,6 +900,46 @@
     payBtn.classList.add('loading');
 
     try {
+      let resolvedPaymentIntentId = paymentIntentId;
+
+      if (isFreeOrder) {
+        // Skip Stripe payment — go straight to confirm-purchase
+        let customerId = null, paymentMethodId = null, cpTrackerUrl = null;
+        try {
+          const cpRes = await fetch('/confirm-purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              paymentIntentId: resolvedPaymentIntentId,
+              email,
+              name: `${firstName} ${lastName}`,
+              addTracker,
+              addSpringLoaded,
+              freeOrder: true,
+            }),
+          });
+          const cpData = await cpRes.json();
+          if (!cpData.error) {
+            customerId      = cpData.customerId;
+            paymentMethodId = cpData.paymentMethodId;
+            cpTrackerUrl    = cpData.trackerUrl;
+          }
+        } catch (_) {}
+
+        sessionStorage.setItem('du_purchase', JSON.stringify({
+          email,
+          name: `${firstName} ${lastName}`,
+          paymentIntentId: resolvedPaymentIntentId,
+          customerId,
+          paymentMethodId,
+          addSpringLoaded,
+          addTracker,
+          trackerUrl: cpTrackerUrl,
+        }));
+        window.location.href = '/upsell-1';
+        return;
+      }
+
       const { error, paymentIntent } = await stripeLib.confirmPayment({
         elements,
         confirmParams: {
@@ -797,7 +960,7 @@
         payBtn.classList.remove('loading');
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Persist customer + payment method for one-click upsells
-        let customerId = null, paymentMethodId = null;
+        let customerId = null, paymentMethodId = null, cpData;
         try {
           const cpRes = await fetch('/confirm-purchase', {
             method: 'POST',
@@ -810,7 +973,7 @@
               addSpringLoaded,
             }),
           });
-          const cpData = await cpRes.json();
+          cpData = await cpRes.json();
           if (!cpData.error) {
             customerId      = cpData.customerId;
             paymentMethodId = cpData.paymentMethodId;
@@ -826,7 +989,7 @@
           paymentMethodId,
           addSpringLoaded,
           addTracker,
-          trackerUrl: (typeof cpData !== 'undefined' && cpData.trackerUrl) ? cpData.trackerUrl : null,
+          trackerUrl: (cpData && cpData.trackerUrl) ? cpData.trackerUrl : null,
         }));
         window.location.href = '/upsell-1';
       }
