@@ -174,6 +174,27 @@ async function circleSendWelcomeDM(email, firstName) {
   }
 }
 
+async function circleAddTag(email, tagId) {
+  const res = await fetch('https://app.circle.so/api/v1/tagged_members', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${CIRCLE_API_TOKEN}`,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({
+      community_id:  CIRCLE_COMMUNITY_ID,
+      member_tag_id: tagId,
+      user_email:    email,
+    }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    console.warn(`  Circle tag error ${res.status}: ${text}`);
+  } else {
+    console.log(`  Circle tag ${tagId} applied → ${email}`);
+  }
+}
+
 async function circleRevokeAccess(email) {
   console.log(`  Revoking Circle access → ${email}`);
   await circleRequest('DELETE', 'community_members', {
@@ -451,8 +472,8 @@ app.post('/confirm-purchase', async (req, res) => {
       circleAddToSpaces(email, DU_FIX_SPACE_IDS).catch(err =>
         console.error('Circle DU Fix access error:', err.message)
       );
-      circleSendWelcomeDM(email, firstName).catch(err =>
-        console.error('Circle DM error:', err.message)
+      circleAddTag(email, 212305).catch(err =>
+        console.error('Circle tag error:', err.message)
       );
     }
 
