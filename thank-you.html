@@ -337,6 +337,7 @@
   ];
   if (purchase.addSpringLoaded)  orderItems.push({ name: 'Spring Loaded (Jump Program)', price: '$27', dot: '' });
   if (purchase.addTracker)       orderItems.push({ name: 'DU Progression Tracker', price: '$7', dot: '' });
+  if (purchase.addedDiagnostic)  orderItems.push({ name: 'DU Diagnostic', price: '$67', dot: '' });
   if (purchase.addedCoaching)    orderItems.push({ name: 'Video Coaching 3-Pack', price: '$97', dot: '' });
   if (purchase.addedUpgrade) {
     const plan  = purchase.subscriptionPlan === 'monthly' ? 'Monthly' : 'Annual';
@@ -412,6 +413,18 @@
       desc: 'Your personal tracker is ready. Bookmark this link — it\'s unique to you.',
       ctaText: 'Open My Tracker',
       ctaHref: purchase.trackerUrl || 'https://dutracker.wodbodmethod.com',
+    }));
+  }
+
+  // 3b. DU Diagnostic
+  if (purchase.addedDiagnostic) {
+    container.appendChild(makeCard({
+      accent: '#0ea5e9',
+      icon: '🔬',
+      title: 'DU Diagnostic',
+      desc: 'Run your assessment — 2 physical tests, ~10 minutes. You\'ll know your #1 blocker and exactly what to focus on in Week 1.',
+      ctaText: 'Start My Diagnostic',
+      ctaHref: purchase.diagnosticUrl || 'https://dudiagnostic.wodbodmethod.com',
     }));
   }
 

@@ -203,11 +203,13 @@ const PRICES = {
 // ── UPSELL PRICES (one-time, cents) ─────────────────
 const UPSELL_PRICES = {
   coaching:    9700,   // $97  — Video Coaching 3-Pack
-  rxBlueprint: 2700,   // $27  — RX Fast-Track Blueprint (downsell)
+  rxBlueprint: 2700,   // $27  — RX Starter Kit (downsell)
+  diagnostic:  6700,   // $67  — DU Diagnostic
 };
 const UPSELL_NAMES = {
   coaching:    'Video Coaching 3-Pack',
-  rxBlueprint: 'RX Fast-Track Blueprint',
+  rxBlueprint: 'RX Starter Kit',
+  diagnostic:  'DU Diagnostic',
 };
 
 // ── SUBSCRIPTION PRICE IDs ───────────────────────────
@@ -436,6 +438,19 @@ app.post('/charge-upsell', async (req, res) => {
       metadata: { product: UPSELL_NAMES[product], upsell: 'true' },
     });
 
+    // Diagnostic: generate unique URL synchronously so it can be returned to client
+    let diagnosticUrl = null;
+    if (product === 'diagnostic') {
+      const cust = await stripe.customers.retrieve(customerId);
+      if (cust.email) {
+        const norm  = String(cust.email).trim().toLowerCase();
+        const token = crypto.createHmac('sha256', process.env.TRACKER_TOKEN_SECRET || 'dev')
+          .update(norm).digest('hex').slice(0, 16);
+        diagnosticUrl = `https://dudiagnostic.wodbodmethod.com/?u=${token}`;
+        mailchimpTag(cust.email, ['du-diagnostic'], { DIAG_URL: diagnosticUrl }).catch(() => {});
+      }
+    }
+
     // Circle + Mailchimp for upsells (fire-and-forget)
     if (product === 'rxBlueprint' || product === 'coaching') {
       stripe.customers.retrieve(customerId).then(cust => {
@@ -452,7 +467,7 @@ app.post('/charge-upsell', async (req, res) => {
       }).catch(() => {});
     }
 
-    res.json({ success: true, paymentIntentId: pi.id });
+    res.json({ success: true, paymentIntentId: pi.id, diagnosticUrl });
   } catch (err) {
     console.error('charge-upsell error:', err.message);
     res.status(400).json({ error: err.message });
