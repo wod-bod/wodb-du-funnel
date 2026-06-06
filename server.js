@@ -400,12 +400,15 @@ app.post('/update-payment-intent', async (req, res) => {
 // Called after initial purchase succeeds — saves PM to a Customer for upsell reuse
 app.post('/confirm-purchase', async (req, res) => {
   try {
-    const { paymentIntentId, email, name, addTracker, addSpringLoaded } = req.body;
-    if (!paymentIntentId) throw new Error('paymentIntentId required');
+    const { paymentIntentId, email, name, addTracker, addSpringLoaded, freeOrder } = req.body;
+    if (!paymentIntentId && !freeOrder) throw new Error('paymentIntentId required');
 
-    const pi   = await stripe.paymentIntents.retrieve(paymentIntentId);
-    const pmId = pi.payment_method;
-    if (!pmId) throw new Error('No payment method on PaymentIntent');
+    let pmId = null;
+    if (!freeOrder) {
+      const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+      pmId = pi.payment_method;
+      if (!pmId) throw new Error('No payment method on PaymentIntent');
+    }
 
     const existing = await stripe.customers.list({ email: email || '', limit: 1 });
     let customer;
@@ -417,18 +420,20 @@ app.post('/confirm-purchase', async (req, res) => {
 
     // Attach PM to customer (non-fatal — upsells degrade gracefully if this fails)
     let pmIdToUse = pmId;
-    try {
-      await stripe.paymentMethods.attach(pmId, { customer: customer.id });
-      await stripe.customers.update(customer.id, {
-        invoice_settings: { default_payment_method: pmId },
-      });
-    } catch (attachErr) {
-      console.warn('PM attach warning (non-fatal):', attachErr.message);
-      // Fall back to any existing card on this customer for future upsells
+    if (pmId) {
       try {
-        const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
-        if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
-      } catch (_) {}
+        await stripe.paymentMethods.attach(pmId, { customer: customer.id });
+        await stripe.customers.update(customer.id, {
+          invoice_settings: { default_payment_method: pmId },
+        });
+      } catch (attachErr) {
+        console.warn('PM attach warning (non-fatal):', attachErr.message);
+        // Fall back to any existing card on this customer for future upsells
+        try {
+          const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
+          if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
+        } catch (_) {}
+      }
     }
 
     // Generate unique tracker URL if they bought the DU Progression Tracker
