@@ -301,34 +301,34 @@ async function ensureSubscriptionPrices() {
       console.log(`  Created product: ${product.id}`);
     }
 
-    // Monthly — $97/month
-    const monthlyList = await stripe.prices.list({ lookup_keys: ['wodb_monthly'], limit: 1 });
+    // Monthly — $50/month
+    const monthlyList = await stripe.prices.list({ lookup_keys: ['wodb_monthly_50'], limit: 1 });
     if (monthlyList.data.length > 0) {
       WODB_MONTHLY_PRICE_ID = monthlyList.data[0].id;
     } else {
       const monthly = await stripe.prices.create({
         product:    product.id,
-        unit_amount: 9700,
+        unit_amount: 5000,
         currency:   'usd',
         recurring:  { interval: 'month' },
-        lookup_key: 'wodb_monthly',
-        nickname:   'WOD BOD Monthly – $97/mo',
+        lookup_key: 'wodb_monthly_50',
+        nickname:   'WOD BOD Monthly – $50/mo',
       });
       WODB_MONTHLY_PRICE_ID = monthly.id;
     }
 
-    // Annual — $799/year
-    const annualList = await stripe.prices.list({ lookup_keys: ['wodb_annual'], limit: 1 });
+    // Annual — $497/year
+    const annualList = await stripe.prices.list({ lookup_keys: ['wodb_annual_497'], limit: 1 });
     if (annualList.data.length > 0) {
       WODB_ANNUAL_PRICE_ID = annualList.data[0].id;
     } else {
       const annual = await stripe.prices.create({
         product:    product.id,
-        unit_amount: 79900,
+        unit_amount: 49700,
         currency:   'usd',
         recurring:  { interval: 'year' },
-        lookup_key: 'wodb_annual',
-        nickname:   'WOD BOD Annual – $799/yr',
+        lookup_key: 'wodb_annual_497',
+        nickname:   'WOD BOD Annual – $497/yr',
       });
       WODB_ANNUAL_PRICE_ID = annual.id;
     }
