@@ -419,6 +419,9 @@
     }
     .powered-by svg { width: 36px; height: 15px; opacity: 0.3; }
 
+    .product-img-desktop { display: block; }
+    .product-img-mobile  { display: none; }
+
     /* ── MOBILE ── */
     @media (max-width: 780px) {
       .checkout-header { padding: 14px 20px; }
@@ -429,6 +432,8 @@
       /* Form first on mobile — buyer already decided, don't re-sell them */
       .form-col    { order: -1; }
       .summary-col { order:  0; }
+      .product-img-desktop { display: none; }
+      .product-img-mobile  { display: block; }
     }
     @media (max-width: 480px) {
       .trust-row { flex-direction: column; gap: 8px; }
@@ -469,7 +474,7 @@
 
   <!-- LEFT: ORDER SUMMARY -->
   <div class="summary-col">
-    <img src="6 wk DU Fix.png" alt="6-Week Double Under Fix" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:18px;display:block;" />
+    <img src="6 wk DU Fix.png" alt="6-Week Double Under Fix" class="product-img-desktop" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:18px;" />
     <span class="summary-label">Your Order</span>
 
     <div class="summary-card">
@@ -542,6 +547,7 @@
   <div class="form-col">
     <h1 class="form-heading">Complete Your <span>Order</span></h1>
     <p class="form-subheading">You&rsquo;re one step away from fixing your double unders for good.</p>
+    <img src="6 wk DU Fix.png" alt="6-Week Double Under Fix" class="product-img-mobile" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:20px;" />
 
     <!-- Loading state -->
     <div id="form-loading">
