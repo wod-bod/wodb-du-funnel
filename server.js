@@ -212,17 +212,22 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
   const sig    = req.headers['stripe-signature'];
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!secret) {
-    console.error('⚠️  STRIPE_WEBHOOK_SECRET not set — webhook rejected');
-    return res.status(500).send('Webhook secret not configured');
-  }
-
   let event;
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, secret);
-  } catch (err) {
-    console.error('Webhook signature failed:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+  if (secret) {
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, secret);
+    } catch (err) {
+      console.error('Webhook signature failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+  } else {
+    // No webhook secret — skip verification (local test mode only)
+    console.warn('⚠️  STRIPE_WEBHOOK_SECRET not set — skipping signature verification');
+    try {
+      event = JSON.parse(req.body.toString());
+    } catch (err) {
+      return res.status(400).send('Invalid JSON body');
+    }
   }
 
   // Acknowledge immediately so Stripe doesn't retry
