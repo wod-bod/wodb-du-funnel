@@ -414,10 +414,10 @@
     .checkout-footer a { color: rgba(255,255,255,0.25); text-decoration: none; }
     .checkout-footer a:hover { color: var(--orange); }
     .powered-by {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.72rem; color: rgba(255,255,255,0.2);
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.72rem; color: rgba(255,255,255,0.45);
     }
-    .powered-by svg { width: 36px; height: 15px; opacity: 0.3; }
+    .powered-by .stripe-name { color: rgba(255,255,255,0.7); font-weight: 600; letter-spacing: 0.02em; }
 
     .product-img-desktop { display: block; }
     .product-img-mobile  { display: none; }
@@ -666,11 +666,8 @@
 <footer class="checkout-footer">
   <p>&copy; 2026 WOD BOD METHOD &bull; <a href="https://wodbodmethod.com">wodbodmethod.com</a></p>
   <div class="powered-by">
-    Secured by
-    <!-- Stripe wordmark SVG -->
-    <svg viewBox="0 0 60 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8.5 10.3c0-.7.6-1 1.5-1 1.4 0 3.1.4 4.5 1.1V6.9c-1.5-.6-3-.9-4.5-.9C6.4 6 4 7.7 4 10.6c0 4.5 6.2 3.8 6.2 5.7 0 .8-.7 1.1-1.7 1.1-1.5 0-3.4-.6-4.9-1.5v3.6c1.7.7 3.4 1 4.9 1 3.2 0 5.4-1.6 5.4-4.5-.1-4.9-6.4-4-6.4-5.7zm13.6-7.2l-3.7.8-.1 12.9h3.8V3.1zm5.8 3.5l-3.8.8V20h3.8v-7.3c.9-1.2 2.4-1 2.9-.8V8.6c-.5-.2-2.3-.5-2.9.9V6.6zm9.4-.2c-1.5 0-2.5.7-3.1 1.2l-.2-1H30v19.2l3.8-.8.1-4.6c.6.4 1.4.9 2.9.9 2.9 0 5.5-2.3 5.5-7.5-.1-4.8-2.7-7.4-5.5-7.4zm-1 11.3c-1 0-1.5-.3-1.9-.8l-.1-6.4c.4-.5 1-.9 2-.9 1.5 0 2.5 1.7 2.5 4 0 2.4-1 4.1-2.5 4.1zm13.6-11.3c-3.6 0-5.8 2.7-5.8 7.5 0 5 2.3 7.4 6 7.4 1.7 0 3-.4 4-1.1v-3.2c-1 .6-2.2.9-3.5.9-1.4 0-2.6-.5-2.7-2.3h6.8c0-.2.1-.9.1-1.3 0-4.4-2-7.9-5.9-7.9zm-2.1 6c0-1.7.9-2.9 2-2.9s1.9 1.2 1.9 2.9h-3.9z" fill="white" opacity="0.5"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px;opacity:0.5;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Secured by <span class="stripe-name">Stripe</span>
   </div>
 </footer>
 
