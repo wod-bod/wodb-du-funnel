@@ -542,7 +542,8 @@ app.post('/create-and-confirm', async (req, res) => {
       currency:                 'usd',
       confirm:                  true,
       confirmation_token:       confirmationToken,
-      automatic_payment_methods: { enabled: true },
+      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
+      return_url:               'https://dufix.wodbodmethod.com/thank-you',
       receipt_email:            email || undefined,
       description:              buildDescription({ addSpringLoaded, addTracker }),
       metadata: {
