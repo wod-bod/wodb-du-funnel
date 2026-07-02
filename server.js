@@ -568,18 +568,19 @@ app.post('/create-and-confirm', async (req, res) => {
       throw new Error(`Unexpected payment status: ${pi.status}`);
     }
 
-    // Explicitly attach PM to customer and set as default for off-session upsells
+    // Use pi.customer as the authoritative customer — this is who Stripe actually charged
+    const authorizedCustomerId = pi.customer || customer.id;
     const pmId    = pi.payment_method;
     let pmIdToUse = pmId;
     if (pmId) {
       try {
-        await stripe.paymentMethods.attach(pmId, { customer: customer.id });
-        await stripe.customers.update(customer.id, { invoice_settings: { default_payment_method: pmId } });
-        console.log(`  PM attached + set default: ${pmId} → ${customer.id}`);
+        await stripe.paymentMethods.attach(pmId, { customer: authorizedCustomerId });
+        await stripe.customers.update(authorizedCustomerId, { invoice_settings: { default_payment_method: pmId } });
+        console.log(`  PM attached + set default: ${pmId} → ${authorizedCustomerId}`);
       } catch (err) {
         console.warn('PM attach warning (non-fatal):', err.message);
         try {
-          const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
+          const methods = await stripe.paymentMethods.list({ customer: authorizedCustomerId, type: 'card' });
           if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
         } catch (_) {}
       }
@@ -612,7 +613,7 @@ app.post('/create-and-confirm', async (req, res) => {
       );
     }
 
-    res.json({ success: true, paymentIntentId: pi.id, customerId: customer.id, paymentMethodId: pmIdToUse, trackerUrl });
+    res.json({ success: true, paymentIntentId: pi.id, customerId: authorizedCustomerId, paymentMethodId: pmIdToUse, trackerUrl });
   } catch (err) {
     console.error('create-and-confirm error:', err.message);
     res.status(400).json({ error: err.message });
