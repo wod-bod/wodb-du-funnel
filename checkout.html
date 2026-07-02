@@ -921,6 +921,14 @@
       }
 
       // ── PAID ORDER: create confirmation token then create+confirm PI on server ──
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        showError(submitError.message);
+        payBtn.disabled = false;
+        payBtn.classList.remove('loading');
+        return;
+      }
+
       const { confirmationToken, error: tokenError } = await stripeLib.createConfirmationToken({
         elements,
         params: {
