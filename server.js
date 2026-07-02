@@ -623,6 +623,17 @@ app.post('/charge-upsell', async (req, res) => {
     const { customerId, paymentMethodId, product } = req.body;
     if (!UPSELL_PRICES[product]) throw new Error('Invalid upsell product');
 
+    // Ensure PM is attached before charging off-session
+    try {
+      await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId });
+      await stripe.customers.update(customerId, {
+        invoice_settings: { default_payment_method: paymentMethodId },
+      });
+    } catch (attachErr) {
+      // Already attached — safe to continue
+      if (attachErr?.raw?.code !== 'resource_already_exists') throw attachErr;
+    }
+
     const pi = await stripe.paymentIntents.create({
       amount:         UPSELL_PRICES[product],
       currency:       'usd',
