@@ -538,10 +538,9 @@ app.post('/create-and-confirm', async (req, res) => {
     }
 
     // Find or create customer BEFORE PI so Stripe can properly save the PM
-    const existing = await stripe.customers.list({ email: email || '', limit: 1 });
-    let customer   = existing.data.length > 0
-      ? existing.data[0]
-      : await stripe.customers.create({ email: email || undefined, name: name || undefined });
+    const normEmail = email ? String(email).trim().toLowerCase() : null;
+    const existing  = normEmail ? await stripe.customers.list({ email: normEmail, limit: 1 }) : { data: [] };
+    let customer    = existing.data[0] || await stripe.customers.create({ email: normEmail || undefined, name: name || undefined });
 
     const pi = await stripe.paymentIntents.create({
       amount,
@@ -570,15 +569,16 @@ app.post('/create-and-confirm', async (req, res) => {
       throw new Error(`Unexpected payment status: ${pi.status}`);
     }
 
-    // PM is now properly saved to the customer by Stripe — set as default
-    const pmId     = pi.payment_method;
-    let pmIdToUse  = pmId;
+    // Explicitly attach PM to customer and set as default for off-session upsells
+    const pmId    = pi.payment_method;
+    let pmIdToUse = pmId;
     if (pmId) {
       try {
+        await stripe.paymentMethods.attach(pmId, { customer: customer.id });
         await stripe.customers.update(customer.id, { invoice_settings: { default_payment_method: pmId } });
-        console.log(`  PM saved to customer: ${pmId} → ${customer.id}`);
+        console.log(`  PM attached + set default: ${pmId} → ${customer.id}`);
       } catch (err) {
-        console.warn('PM set-default warning (non-fatal):', err.message);
+        console.warn('PM attach warning (non-fatal):', err.message);
         try {
           const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
           if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
