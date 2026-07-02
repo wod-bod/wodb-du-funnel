@@ -547,8 +547,7 @@ app.post('/create-and-confirm', async (req, res) => {
       currency:                  'usd',
       confirm:                   true,
       confirmation_token:        confirmationToken,
-      customer:                  customer.id,        // attach customer at PI creation time
-      setup_future_usage:        'off_session',      // tells Stripe to save PM for future charges
+      customer:                  customer.id,
       automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
       return_url:                'https://dufix.wodbodmethod.com/thank-you',
       receipt_email:             email || undefined,
