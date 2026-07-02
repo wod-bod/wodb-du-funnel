@@ -521,7 +521,7 @@ app.post('/apply-coupon', async (req, res) => {
 // Create + confirm PaymentIntent atomically (deferred intent flow from checkout)
 app.post('/create-and-confirm', async (req, res) => {
   try {
-    const { confirmationToken, addSpringLoaded = false, addTracker = false, couponCode, email, name } = req.body;
+    const { confirmationToken, addSpringLoaded = false, addTracker = false, addDiagnostic = false, couponCode, email, name } = req.body;
     if (!confirmationToken) throw new Error('confirmationToken required');
 
     let amount = calcAmount({ addSpringLoaded, addTracker });
@@ -600,9 +600,10 @@ app.post('/create-and-confirm', async (req, res) => {
 
       const mcTags  = ['Purchased DU Masterclass'];
       const mcMerge = {};
-      if (addSpringLoaded) { mcTags.push('spring-loaded'); mcMerge.BOUGHT_SL = 'yes'; }
-      if (addTracker)      { mcTags.push('du-tracker');   mcMerge.TRACKER   = 'yes'; }
+      if (addSpringLoaded)  { mcTags.push('spring-loaded'); mcMerge.BOUGHT_SL = 'yes'; }
+      if (addTracker)       { mcTags.push('du-tracker');   mcMerge.TRACKER   = 'yes'; }
       if (addTracker && trackerUrl) { mcMerge.TRACK_URL = trackerUrl; }
+      if (addDiagnostic)    { mcTags.push('du-diagnostic'); mcMerge.DIAG = 'yes'; mcMerge.DIAG_URL = 'https://dudiagnostic.wodbodmethod.com?email=' + encodeURIComponent(email); }
       mailchimpTag(email, mcTags, mcMerge).catch(err =>
         console.error('Mailchimp tag error:', err.message)
       );
