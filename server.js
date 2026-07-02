@@ -537,15 +537,23 @@ app.post('/create-and-confirm', async (req, res) => {
       } catch (_) { /* invalid coupon — proceed at full price */ }
     }
 
+    // Find or create customer BEFORE PI so Stripe can properly save the PM
+    const existing = await stripe.customers.list({ email: email || '', limit: 1 });
+    let customer   = existing.data.length > 0
+      ? existing.data[0]
+      : await stripe.customers.create({ email: email || undefined, name: name || undefined });
+
     const pi = await stripe.paymentIntents.create({
       amount,
-      currency:                 'usd',
-      confirm:                  true,
-      confirmation_token:       confirmationToken,
+      currency:                  'usd',
+      confirm:                   true,
+      confirmation_token:        confirmationToken,
+      customer:                  customer.id,        // attach customer at PI creation time
+      setup_future_usage:        'off_session',      // tells Stripe to save PM for future charges
       automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
-      return_url:               'https://dufix.wodbodmethod.com/thank-you',
-      receipt_email:            email || undefined,
-      description:              buildDescription({ addSpringLoaded, addTracker }),
+      return_url:                'https://dufix.wodbodmethod.com/thank-you',
+      receipt_email:             email || undefined,
+      description:               buildDescription({ addSpringLoaded, addTracker }),
       metadata: {
         product:         '6-Week Double Under Fix',
         addSpringLoaded: String(addSpringLoaded),
@@ -562,20 +570,15 @@ app.post('/create-and-confirm', async (req, res) => {
       throw new Error(`Unexpected payment status: ${pi.status}`);
     }
 
-    // ── POST-PAYMENT: create customer, attach PM, Circle, Mailchimp ──
+    // PM is now properly saved to the customer by Stripe — set as default
     const pmId     = pi.payment_method;
-    const existing = await stripe.customers.list({ email: email || '', limit: 1 });
-    let customer   = existing.data.length > 0
-      ? existing.data[0]
-      : await stripe.customers.create({ email: email || undefined, name: name || undefined });
-
-    let pmIdToUse = pmId;
+    let pmIdToUse  = pmId;
     if (pmId) {
       try {
-        await stripe.paymentMethods.attach(pmId, { customer: customer.id });
         await stripe.customers.update(customer.id, { invoice_settings: { default_payment_method: pmId } });
-      } catch (attachErr) {
-        console.warn('PM attach warning (non-fatal):', attachErr.message);
+        console.log(`  PM saved to customer: ${pmId} → ${customer.id}`);
+      } catch (err) {
+        console.warn('PM set-default warning (non-fatal):', err.message);
         try {
           const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
           if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
@@ -623,16 +626,7 @@ app.post('/charge-upsell', async (req, res) => {
     const { customerId, paymentMethodId, product } = req.body;
     if (!UPSELL_PRICES[product]) throw new Error('Invalid upsell product');
 
-    // Ensure PM is attached before charging off-session
-    try {
-      await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId });
-      await stripe.customers.update(customerId, {
-        invoice_settings: { default_payment_method: paymentMethodId },
-      });
-    } catch (attachErr) {
-      // Already attached — safe to continue
-      if (attachErr?.raw?.code !== 'resource_already_exists') throw attachErr;
-    }
+    console.log(`  charge-upsell: product=${product} customerId=${customerId} paymentMethodId=${paymentMethodId}`);
 
     const pi = await stripe.paymentIntents.create({
       amount:         UPSELL_PRICES[product],
@@ -674,9 +668,10 @@ app.post('/charge-upsell', async (req, res) => {
       }).catch(() => {});
     }
 
+    console.log(`  charge-upsell: PI created ${pi.id} status=${pi.status}`);
     res.json({ success: true, paymentIntentId: pi.id, diagnosticUrl });
   } catch (err) {
-    console.error('charge-upsell error:', err.message);
+    console.error(`  charge-upsell error: ${err.message} (code=${err?.raw?.code})`);
     res.status(400).json({ error: err.message });
   }
 });
