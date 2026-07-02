@@ -518,6 +518,103 @@ app.post('/apply-coupon', async (req, res) => {
   }
 });
 
+// Create + confirm PaymentIntent atomically (deferred intent flow from checkout)
+app.post('/create-and-confirm', async (req, res) => {
+  try {
+    const { confirmationToken, addSpringLoaded = false, addTracker = false, couponCode, email, name } = req.body;
+    if (!confirmationToken) throw new Error('confirmationToken required');
+
+    let amount = calcAmount({ addSpringLoaded, addTracker });
+
+    // Apply coupon discount if provided
+    if (couponCode) {
+      try {
+        const coupon = await stripe.coupons.retrieve(couponCode.toUpperCase());
+        if (coupon.valid) {
+          if (coupon.percent_off) amount = Math.max(0, Math.round(amount * (1 - coupon.percent_off / 100)));
+          if (coupon.amount_off)  amount = Math.max(0, amount - coupon.amount_off);
+        }
+      } catch (_) { /* invalid coupon — proceed at full price */ }
+    }
+
+    const pi = await stripe.paymentIntents.create({
+      amount,
+      currency:                 'usd',
+      confirm:                  true,
+      confirmation_token:       confirmationToken,
+      automatic_payment_methods: { enabled: true },
+      receipt_email:            email || undefined,
+      description:              buildDescription({ addSpringLoaded, addTracker }),
+      metadata: {
+        product:         '6-Week Double Under Fix',
+        addSpringLoaded: String(addSpringLoaded),
+        addTracker:      String(addTracker),
+      },
+    });
+
+    // 3D Secure or other next-action required — client handles it, then calls /confirm-purchase
+    if (pi.status === 'requires_action') {
+      return res.json({ requiresAction: true, clientSecret: pi.client_secret, paymentIntentId: pi.id });
+    }
+
+    if (pi.status !== 'succeeded') {
+      throw new Error(`Unexpected payment status: ${pi.status}`);
+    }
+
+    // ── POST-PAYMENT: create customer, attach PM, Circle, Mailchimp ──
+    const pmId     = pi.payment_method;
+    const existing = await stripe.customers.list({ email: email || '', limit: 1 });
+    let customer   = existing.data.length > 0
+      ? existing.data[0]
+      : await stripe.customers.create({ email: email || undefined, name: name || undefined });
+
+    let pmIdToUse = pmId;
+    if (pmId) {
+      try {
+        await stripe.paymentMethods.attach(pmId, { customer: customer.id });
+        await stripe.customers.update(customer.id, { invoice_settings: { default_payment_method: pmId } });
+      } catch (attachErr) {
+        console.warn('PM attach warning (non-fatal):', attachErr.message);
+        try {
+          const methods = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
+          if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
+        } catch (_) {}
+      }
+    }
+
+    let trackerUrl = null;
+    if (addTracker && email) {
+      const norm  = String(email).trim().toLowerCase();
+      const token = crypto.createHmac('sha256', process.env.TRACKER_TOKEN_SECRET || 'dev')
+        .update(norm).digest('hex').slice(0, 16);
+      trackerUrl = `https://dutracker.wodbodmethod.com/?u=${token}`;
+    }
+
+    if (email) {
+      circleAddToSpaces(email, DU_FIX_SPACE_IDS).catch(err =>
+        console.error('Circle DU Fix access error:', err.message)
+      );
+      circleAddTag(email, 212305).catch(err =>
+        console.error('Circle tag error:', err.message)
+      );
+
+      const mcTags  = ['Purchased DU Masterclass'];
+      const mcMerge = {};
+      if (addSpringLoaded) { mcTags.push('spring-loaded'); mcMerge.BOUGHT_SL = 'yes'; }
+      if (addTracker)      { mcTags.push('du-tracker');   mcMerge.TRACKER   = 'yes'; }
+      if (addTracker && trackerUrl) { mcMerge.TRACK_URL = trackerUrl; }
+      mailchimpTag(email, mcTags, mcMerge).catch(err =>
+        console.error('Mailchimp tag error:', err.message)
+      );
+    }
+
+    res.json({ success: true, paymentIntentId: pi.id, customerId: customer.id, paymentMethodId: pmIdToUse, trackerUrl });
+  } catch (err) {
+    console.error('create-and-confirm error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // One-click charge for one-time upsells (coaching, rxBlueprint)
 app.post('/charge-upsell', async (req, res) => {
   try {

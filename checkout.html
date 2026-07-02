@@ -681,7 +681,7 @@
   const PRICES = { main: 37, springLoaded: 27, tracker: 7 };
 
   const stripeLib = Stripe(PUBLISHABLE_KEY);
-  let elements, paymentIntentId;
+  let elements;
   let addSpringLoaded = false;
   let addTracker      = false;
 
@@ -759,7 +759,7 @@
       const res  = await fetch('/apply-coupon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, paymentIntentId, addSpringLoaded, addTracker }),
+        body: JSON.stringify({ code, addSpringLoaded, addTracker }),
       });
       const data = await res.json();
 
@@ -791,79 +791,54 @@
     errorDiv.textContent = '';
   }
 
-  // ── INIT PAYMENT INTENT ───────────────────────────
-  async function initPaymentIntent() {
-    try {
-      const res = await fetch('/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addSpringLoaded: false, addTracker: false }),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-
-      paymentIntentId = data.paymentIntentId;
-
-      // Create Stripe Elements
-      elements = stripeLib.elements({
-        clientSecret: data.clientSecret,
-        appearance: {
-          theme: 'night',
-          variables: {
-            colorPrimary:        '#fb5000',
-            colorBackground:     '#171717',
-            colorText:           '#ffffff',
-            colorDanger:         '#ef4444',
-            fontFamily:          'DM Sans, sans-serif',
-            borderRadius:        '6px',
-            spacingUnit:         '4px',
-          },
-          rules: {
-            '.Input': {
-              border: '1px solid rgba(255,255,255,0.07)',
-              backgroundColor: '#171717',
-            },
-            '.Input:focus': {
-              border: '1px solid rgba(251,80,0,0.5)',
-              boxShadow: '0 0 0 3px rgba(251,80,0,0.08)',
-            },
-            '.Label': {
-              color: 'rgba(255,255,255,0.45)',
-              fontSize: '0.78rem',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            },
-          },
+  // ── INIT ELEMENTS (deferred intent — no server call on load) ─────
+  elements = stripeLib.elements({
+    mode:     'payment',
+    amount:   calcTotal() * 100,
+    currency: 'usd',
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary:        '#fb5000',
+        colorBackground:     '#171717',
+        colorText:           '#ffffff',
+        colorDanger:         '#ef4444',
+        fontFamily:          'DM Sans, sans-serif',
+        borderRadius:        '6px',
+        spacingUnit:         '4px',
+      },
+      rules: {
+        '.Input': {
+          border: '1px solid rgba(255,255,255,0.07)',
+          backgroundColor: '#171717',
         },
-      });
+        '.Input:focus': {
+          border: '1px solid rgba(251,80,0,0.5)',
+          boxShadow: '0 0 0 3px rgba(251,80,0,0.08)',
+        },
+        '.Label': {
+          color: 'rgba(255,255,255,0.45)',
+          fontSize: '0.78rem',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        },
+      },
+    },
+  });
 
-      const paymentElement = elements.create('payment', {
-        layout: { type: 'accordion', defaultCollapsed: false, radios: false, spacedAccordionItems: false },
-      });
-      paymentElement.mount('#payment-element');
+  const paymentElement = elements.create('payment', {
+    layout: { type: 'accordion', defaultCollapsed: false, radios: false, spacedAccordionItems: false },
+  });
+  paymentElement.mount('#payment-element');
 
-      // Show form
-      formLoading.style.display  = 'none';
-      checkoutForm.style.display = 'block';
+  formLoading.style.display  = 'none';
+  checkoutForm.style.display = 'block';
 
-    } catch (err) {
-      formLoading.innerHTML = `<p style="color:#ef4444;">Unable to load checkout. Please refresh the page.</p>`;
-      console.error(err);
-    }
-  }
-
-  // ── UPDATE PAYMENT INTENT (bumps toggle) ──────────
+  // ── SYNC BUMP AMOUNT (no PI yet — update Elements amount locally) ──
   async function syncBumps() {
-    if (!paymentIntentId) return;
     totalDisplay.classList.add('updating');
     try {
-      const res = await fetch('/update-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paymentIntentId, addSpringLoaded, addTracker }),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      await elements.update({ amount: calcTotal() * 100 });
     } catch (err) {
       console.error('Bump sync error:', err.message);
     } finally {
@@ -907,8 +882,6 @@
     payBtn.classList.add('loading');
 
     try {
-      let resolvedPaymentIntentId = paymentIntentId;
-
       if (isFreeOrder) {
         // Skip Stripe payment — go straight to confirm-purchase
         let customerId = null, paymentMethodId = null, cpTrackerUrl = null;
@@ -917,7 +890,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              paymentIntentId: resolvedPaymentIntentId,
+              paymentIntentId: null,
               email,
               name: `${firstName} ${lastName}`,
               addTracker,
@@ -936,7 +909,7 @@
         sessionStorage.setItem('du_purchase', JSON.stringify({
           email,
           name: `${firstName} ${lastName}`,
-          paymentIntentId: resolvedPaymentIntentId,
+          paymentIntentId: null,
           customerId,
           paymentMethodId,
           addSpringLoaded,
@@ -947,59 +920,87 @@
         return;
       }
 
-      const { error, paymentIntent } = await stripeLib.confirmPayment({
+      // ── PAID ORDER: create confirmation token then create+confirm PI on server ──
+      const { confirmationToken, error: tokenError } = await stripeLib.createConfirmationToken({
         elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/upsell-1`,
+        params: {
           payment_method_data: {
-            billing_details: {
-              name:  `${firstName} ${lastName}`,
-              email: email,
-            },
+            billing_details: { name: `${firstName} ${lastName}`, email },
           },
         },
-        redirect: 'if_required',
       });
 
-      if (error) {
-        showError(error.message);
+      if (tokenError) {
+        showError(tokenError.message);
         payBtn.disabled = false;
         payBtn.classList.remove('loading');
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Persist customer + payment method for one-click upsells
-        let customerId = null, paymentMethodId = null, cpData;
+        return;
+      }
+
+      const ccRes  = await fetch('/create-and-confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          confirmationToken: confirmationToken.id,
+          addSpringLoaded,
+          addTracker,
+          couponCode: appliedCoupon ? appliedCoupon.code : null,
+          email,
+          name: `${firstName} ${lastName}`,
+        }),
+      });
+      const ccData = await ccRes.json();
+
+      if (ccData.error) {
+        showError(ccData.error);
+        payBtn.disabled = false;
+        payBtn.classList.remove('loading');
+        return;
+      }
+
+      // Handle 3D Secure / additional authentication
+      if (ccData.requiresAction) {
+        const { error: actionError } = await stripeLib.handleNextAction({ clientSecret: ccData.clientSecret });
+        if (actionError) {
+          showError(actionError.message);
+          payBtn.disabled = false;
+          payBtn.classList.remove('loading');
+          return;
+        }
+        // After 3DS, run confirm-purchase to attach PM and trigger Circle/Mailchimp
         try {
-          const cpRes = await fetch('/confirm-purchase', {
+          const cpRes  = await fetch('/confirm-purchase', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              paymentIntentId,
+              paymentIntentId: ccData.paymentIntentId,
               email,
               name: `${firstName} ${lastName}`,
               addTracker,
               addSpringLoaded,
             }),
           });
-          cpData = await cpRes.json();
+          const cpData = await cpRes.json();
           if (!cpData.error) {
-            customerId      = cpData.customerId;
-            paymentMethodId = cpData.paymentMethodId;
+            ccData.customerId      = cpData.customerId;
+            ccData.paymentMethodId = cpData.paymentMethodId;
+            ccData.trackerUrl      = cpData.trackerUrl;
           }
-        } catch (_) { /* non-fatal — upsell pages will handle gracefully */ }
-
-        // Store purchase info for upsell pages
-        sessionStorage.setItem('du_purchase', JSON.stringify({
-          email,
-          name: `${firstName} ${lastName}`,
-          paymentIntentId,
-          customerId,
-          paymentMethodId,
-          addSpringLoaded,
-          addTracker,
-          trackerUrl: (cpData && cpData.trackerUrl) ? cpData.trackerUrl : null,
-        }));
-        window.location.href = '/upsell-1';
+        } catch (_) {}
       }
+
+      // Store purchase info for upsell pages
+      sessionStorage.setItem('du_purchase', JSON.stringify({
+        email,
+        name: `${firstName} ${lastName}`,
+        paymentIntentId: ccData.paymentIntentId,
+        customerId:      ccData.customerId,
+        paymentMethodId: ccData.paymentMethodId,
+        addSpringLoaded,
+        addTracker,
+        trackerUrl: ccData.trackerUrl || null,
+      }));
+      window.location.href = '/upsell-1';
     } catch (err) {
       showError('Something went wrong. Please try again.');
       payBtn.disabled = false;
@@ -1008,7 +1009,6 @@
   });
 
   // ── KICK OFF ──────────────────────────────────────
-  await initPaymentIntent();
   updateUI();
 })();
 </script>
