@@ -790,9 +790,10 @@
 
   // ── INIT ELEMENTS (deferred intent — no server call on load) ─────
   elements = stripeLib.elements({
-    mode:     'payment',
-    amount:   calcTotal() * 100,
-    currency: 'usd',
+    mode:               'payment',
+    amount:             calcTotal() * 100,
+    currency:           'usd',
+    setup_future_usage: 'off_session',
     appearance: {
       theme: 'night',
       variables: {
@@ -932,6 +933,7 @@
           payment_method_data: {
             billing_details: { name: `${firstName} ${lastName}`, email },
           },
+          setup_future_usage: 'off_session',
         },
       });
 

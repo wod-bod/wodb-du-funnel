@@ -577,19 +577,31 @@ app.post('/create-and-confirm', async (req, res) => {
     const authorizedCustomerId = pi.customer || customer.id;
     const pmId    = pi.payment_method;
     let pmIdToUse = pmId;
+    console.log(`  create-and-confirm: customer.id=${customer.id} pi.customer=${pi.customer} authorizedCustomerId=${authorizedCustomerId} pm=${pmId}`);
     if (pmId) {
-      try {
-        await stripe.paymentMethods.attach(pmId, { customer: authorizedCustomerId });
+      // When a PI confirms with customer:, Stripe auto-attaches the PM. Check that first
+      // before attempting a manual attach (which would throw if already attached).
+      const pm = await stripe.paymentMethods.retrieve(pmId);
+      if (pm.customer === authorizedCustomerId) {
         await stripe.customers.update(authorizedCustomerId, { invoice_settings: { default_payment_method: pmId } });
-        console.log(`  PM attached + set default: ${pmId} → ${authorizedCustomerId}`);
-      } catch (err) {
-        console.warn('PM attach warning (non-fatal):', err.message);
+        console.log(`  PM auto-attached by Stripe, set as default: ${pmId} → ${authorizedCustomerId}`);
+      } else {
         try {
-          const methods = await stripe.paymentMethods.list({ customer: authorizedCustomerId, type: 'card' });
-          if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
-        } catch (_) {}
+          await stripe.paymentMethods.attach(pmId, { customer: authorizedCustomerId });
+          await stripe.customers.update(authorizedCustomerId, { invoice_settings: { default_payment_method: pmId } });
+          console.log(`  PM manually attached + set default: ${pmId} → ${authorizedCustomerId}`);
+        } catch (err) {
+          console.warn(`  PM attach failed (${err.message}) — scanning all PMs on customer`);
+          try {
+            // List all types (card, link, etc.) — prior fallback only checked 'card'
+            const methods = await stripe.paymentMethods.list({ customer: authorizedCustomerId });
+            console.log(`  fallback PM scan: found ${methods.data.length} PM(s) on ${authorizedCustomerId}`);
+            if (methods.data.length > 0) pmIdToUse = methods.data[0].id;
+          } catch (_) {}
+        }
       }
     }
+    console.log(`  create-and-confirm: returning customerId=${authorizedCustomerId} paymentMethodId=${pmIdToUse}`);
 
     let trackerUrl = null;
     if (addTracker && email) {
