@@ -92,13 +92,13 @@
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       text-align: center; padding: 120px 64px 100px;
       overflow: hidden;
-      background: #111111;
+      background: #FFFFFF;
     }
     .hero-lines {
-      position: absolute; inset: 0; z-index: 0; opacity: 0.03;
+      position: absolute; inset: 0; z-index: 0; opacity: 0.04;
       background-image: repeating-linear-gradient(
         -45deg, transparent, transparent 60px,
-        rgba(255,255,255,0.3) 60px, rgba(255,255,255,0.3) 61px
+        rgba(0,0,0,0.15) 60px, rgba(0,0,0,0.15) 61px
       );
     }
     .hero-content { position: relative; z-index: 2; max-width: 980px; }
@@ -130,7 +130,7 @@
 
     .hero-headline {
       font-size: clamp(3.2rem, 9.5vw, 8.2rem);
-      line-height: 0.9; margin-bottom: 30px; color: var(--white);
+      line-height: 0.9; margin-bottom: 30px; color: #111111;
     }
     .hero-headline .du-word {
       background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
@@ -146,7 +146,7 @@
     .hero-headline .word.visible { opacity: 1; transform: translateY(0) rotateX(0deg); }
 
     .hero-sub {
-      font-size: 1.2rem; line-height: 1.7; color: rgba(255,255,255,0.6);
+      font-size: 1.2rem; line-height: 1.7; color: #555555;
       max-width: 600px; margin: 0 auto 48px;
       opacity: 0; transform: translateY(24px);
       animation: sub-in 0.8s 1.2s ease forwards;
@@ -197,17 +197,17 @@
     }
 
     .social-proof {
-      margin-top: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.45);
+      margin-top: 20px; font-size: 0.9rem; color: #888888;
       letter-spacing: 0.03em;
     }
-    .social-proof strong { color: rgba(255,255,255,0.85); }
+    .social-proof strong { color: #111111; }
     .social-proof .du-inline { color: var(--orange); font-weight: 700; }
 
     .scroll-hint {
       position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
       display: flex; flex-direction: column; align-items: center; gap: 8px;
       opacity: 0.3; animation: bounce-down 2s ease-in-out infinite;
-      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #fff;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #111;
     }
     .scroll-hint svg { width: 20px; height: 20px; }
     @keyframes bounce-down {
