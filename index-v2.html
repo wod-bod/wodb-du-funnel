@@ -167,7 +167,12 @@
       color: var(--white); text-decoration: none;
       position: relative; overflow: hidden;
       box-shadow: 0 8px 32px rgba(251,80,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+      animation: cta-pulse 2.5s ease-in-out infinite;
       transition: transform 0.2s, box-shadow 0.2s;
+    }
+    @keyframes cta-pulse {
+      0%,100% { box-shadow: 0 8px 32px rgba(251,80,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+      50%      { box-shadow: 0 8px 40px rgba(251,80,0,0.6), 0 0 0 8px rgba(251,80,0,0.08), inset 0 1px 0 rgba(255,255,255,0.15); }
     }
     .btn-primary::before {
       content: ''; position: absolute; inset: 0;
@@ -179,6 +184,7 @@
     .btn-primary:hover {
       transform: translateY(-3px);
       box-shadow: 0 16px 48px rgba(251,80,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+      animation: none;
     }
     .btn-primary:active { transform: translateY(-1px); }
 
