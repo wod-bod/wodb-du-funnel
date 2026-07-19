@@ -369,6 +369,7 @@ app.get('/upsell-2',              (_req, res) => res.sendFile(path.join(__dirnam
 app.get('/thank-you',             (_req, res) => res.sendFile(path.join(__dirname, 'thank-you.html')));
 app.get('/downsell',              (_req, res) => res.sendFile(path.join(__dirname, 'downsell.html')));
 app.get('/subscription-portal',  (_req, res) => res.sendFile(path.join(__dirname, 'subscription-portal.html')));
+app.get('/terms',                 (_req, res) => res.sendFile(path.join(__dirname, 'terms.html')));
 
 // Frontend config — exposes non-secret price IDs so pages can use them
 app.get('/config', (_req, res) => {

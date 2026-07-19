@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms &amp; Refund Policy — WOD BOD METHOD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:       #080808;
+      --white:       #FFFFFF;
+      --orange:      #fb5000;
+      --orange-2:    #ff7033;
+      --orange-glow: rgba(251,80,0,0.45);
+      --orange-dim:  rgba(251,80,0,0.10);
+      --gray-dark:   #111111;
+      --gray-mid:    #1C1C1C;
+      --gray-text:   #888;
+      --teal:        #00E5C0;
+      --red-x:       #ff3b3b;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,.display {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.03em; line-height: 0.98;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 56px;
+      transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    nav.scrolled {
+      padding: 14px 56px;
+      background: rgba(8,8,8,0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(251,80,0,0.12);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white); text-decoration: none; position: relative;
+    }
+    .nav-logo span { color: var(--orange); }
+    .nav-cta {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif; font-weight: 600;
+      font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+      transition: border-color 0.3s, color 0.3s; cursor: pointer;
+    }
+    .nav-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--orange); transform: translateX(-101%);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .nav-cta span { position: relative; z-index: 1; }
+    .nav-cta:hover::before { transform: translateX(0); }
+    .nav-cta:hover { border-color: var(--orange); }
+
+    /* ── LEGAL CONTENT ── */
+    #legal {
+      background: var(--black);
+      padding: 170px 24px 120px;
+    }
+    .legal-inner { max-width: 760px; margin: 0 auto; }
+    .legal-inner .section-label {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 14px; display: block;
+    }
+    .legal-inner h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      margin-bottom: 10px;
+    }
+    .legal-inner .last-updated {
+      font-family: 'DM Sans', sans-serif; font-style: italic; font-weight: 400;
+      font-size: 0.85rem; color: rgba(255,255,255,0.4);
+      margin-bottom: 48px;
+    }
+    .legal-inner h2 {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      color: var(--white);
+      margin-top: 48px; margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .legal-inner p {
+      font-size: 0.98rem; line-height: 1.7;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 16px;
+    }
+    .legal-inner p strong { color: rgba(255,255,255,0.9); font-weight: 600; }
+    .legal-inner ul {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+    .legal-inner ul li {
+      font-size: 0.98rem; line-height: 1.7;
+      color: rgba(255,255,255,0.65);
+      padding-left: 22px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .legal-inner ul li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--orange);
+    }
+    .legal-inner a {
+      color: var(--orange-2);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color 0.2s;
+    }
+    .legal-inner a:hover { color: var(--orange); }
+    .legal-inner hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin: 48px 0 28px;
+    }
+    .legal-inner .legal-footnote {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #050505;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 36px 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.15rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+    }
+    .footer-logo span { color: var(--orange); }
+    footer p { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+    footer a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--orange); }
+
+    @media (max-width: 900px) {
+      nav, nav.scrolled { padding: 16px 20px; }
+      #legal { padding: 150px 20px 90px; }
+    }
+    @media (max-width: 480px) {
+      footer { padding: 24px 20px; flex-direction: column; text-align: center; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAV
+════════════════════════════════════════ -->
+<nav id="main-nav">
+  <a href="/index.html" class="nav-logo">WOD <span>BOD</span></a>
+  <a href="/checkout" class="nav-cta"><span>Get Instant Access &mdash; $37</span></a>
+</nav>
+
+<!-- ════════════════════════════════════════
+     LEGAL CONTENT
+════════════════════════════════════════ -->
+<section id="legal">
+  <div class="legal-inner">
+    <span class="section-label">Terms &amp; Refund Policy</span>
+    <h1>6-Week Double Under Fix — Terms &amp; Refund Policy</h1>
+    <p class="last-updated">Last updated: July 2026</p>
+
+    <h2>What You're Buying</h2>
+    <p>The 6-Week Double Under Fix ("DU Fix") is a digital training program delivered online. There is no physical product shipped. Upon purchase, you get immediate access to the program materials, videos, and any add-ons you selected at checkout (Spring Loaded, DU Progression Tracker, etc.).</p>
+
+    <h2>7-Day Satisfaction Guarantee</h2>
+    <p>We stand behind the DU Fix. If you're not satisfied, you can request a full refund within <strong>7 days of your original purchase date</strong>.</p>
+
+    <p><strong>To qualify:</strong></p>
+    <ul>
+      <li>Your refund request must be submitted within 7 days of purchase</li>
+      <li>Email contact@ivnmfitness.com with your order confirmation and the reason for your request</li>
+    </ul>
+
+    <p><strong>How it works:</strong></p>
+    <ul>
+      <li>Once approved, refunds are issued to the original payment method within 5–10 business days</li>
+      <li>Refunds apply to the base DU Fix purchase. Order bumps, upsells, and any recurring subscriptions (e.g. WOD BOD Method membership) are handled separately — see below</li>
+    </ul>
+
+    <p><strong>After 7 days:</strong> we're unable to offer refunds, since program access and materials have been fully delivered.</p>
+
+    <h2>Order Bumps &amp; Upsells</h2>
+    <p>If you added Spring Loaded, the DU Progression Tracker, the DU Diagnostic, or upgraded to WOD BOD Method membership at checkout, those are billed and refunded independently of the base DU Fix guarantee above. Recurring subscriptions (like WOD BOD Method annual/monthly) can be canceled at any time — reach out to contact@ivnmfitness.com to cancel.</p>
+
+    <h2>Fitness Disclaimer</h2>
+    <p>CrossFit and double under training carry inherent physical risk. By purchasing and participating in the DU Fix, you confirm that:</p>
+    <ul>
+      <li>You are physically able to participate in the exercises described</li>
+      <li>You will consult a physician before beginning this or any new exercise program if you have any pre-existing condition, injury, or concern</li>
+      <li>WOD BOD Method, IVNM Fitness LLC, and its founder are not liable for any injury sustained while following this program</li>
+      <li>Results are individual and not guaranteed — testimonials and results shown reflect individual experiences and may not be typical</li>
+    </ul>
+
+    <h2>Access &amp; Usage</h2>
+    <ul>
+      <li>This program is for your personal use only. Redistribution, resale, or public sharing of the program materials is prohibited.</li>
+      <li>We reserve the right to revoke access for violation of these terms.</li>
+    </ul>
+
+    <h2>Questions</h2>
+    <p>For any questions about this policy, refunds, or your order, contact us at contact@ivnmfitness.com.</p>
+    <p>For our full Privacy Policy and general business Terms of Use, visit <a href="https://www.wodbodmethod.com/privacy-policy" target="_blank">wodbodmethod.com/privacy-policy</a> and <a href="https://www.wodbodmethod.com/terms-of-use" target="_blank">wodbodmethod.com/terms-of-use</a>.</p>
+
+    <hr />
+    <p class="legal-footnote">This policy applies specifically to the 6-Week Double Under Fix program. It supplements, and does not replace, the general Privacy Policy and Terms of Use found at wodbodmethod.com.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer>
+  <a href="/index.html" class="footer-logo">WOD <span>BOD</span> METHOD</a>
+  <p>&copy; 2026 WOD BOD METHOD. All rights reserved. &bull; <a href="https://www.wodbodmethod.com/privacy-policy" target="_blank">Privacy Policy</a> &bull; <a href="/terms">Terms</a></p>
+</footer>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+  // ── NAV SCROLL ──
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+</script>
+
+</body>
+</html>
