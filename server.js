@@ -72,7 +72,7 @@ const DU_FIX_SPACE_IDS = [
 
 // Spaces unlocked by the RX Starter Kit (one-time downsell)
 const RX_STARTER_KIT_SPACE_IDS = [
-  2182485, // Mobility Lab
+  1982686, // Mobility Lab
   1563581, // Gymnastics Kickstarter
   2002272, // Oly Overhaul
   1980533, // Community Chat
@@ -478,7 +478,7 @@ app.post('/confirm-purchase', async (req, res) => {
       circleAddToSpaces(email, DU_FIX_SPACE_IDS).catch(err =>
         console.error('Circle DU Fix access error:', err.message)
       );
-      circleAddTag(email, 212305).catch(err =>
+      circleAddTag(email, 212305).catch(err =>  // 212305 = "6-Wk DU Fix Purchased"
         console.error('Circle tag error:', err.message)
       );
     }
@@ -613,10 +613,11 @@ app.post('/create-and-confirm', async (req, res) => {
     }
 
     if (email) {
+      const firstName = (name || '').split(' ')[0] || '';
       circleAddToSpaces(email, DU_FIX_SPACE_IDS).catch(err =>
         console.error('Circle DU Fix access error:', err.message)
       );
-      circleAddTag(email, 212305).catch(err =>
+      circleAddTag(email, 212305).catch(err =>  // 212305 = "6-Wk DU Fix Purchased"
         console.error('Circle tag error:', err.message)
       );
 
