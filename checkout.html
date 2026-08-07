@@ -53,6 +53,11 @@
       color: rgba(255,255,255,0.4);
     }
     .header-secure svg { width: 13px; height: 13px; opacity: 0.5; }
+    .header-guarantee {
+      padding-left: 12px; margin-left: 5px;
+      border-left: 1px solid rgba(255,255,255,0.12);
+      color: var(--orange);
+    }
     .header-steps {
       display: flex; align-items: center; gap: 8px;
       font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 0.06em;
@@ -388,6 +393,12 @@
       letter-spacing: 0.04em;
     }
     .security-line svg { width: 12px; height: 12px; opacity: 0.4; }
+    .guarantee-line {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      margin-bottom: 12px; font-size: 0.85rem; font-weight: 700;
+      color: var(--orange); letter-spacing: 0.02em;
+    }
+    .guarantee-line svg { width: 15px; height: 15px; }
 
     /* ── LOADING STATE ── */
     #form-loading {
@@ -491,6 +502,7 @@
   <div class="header-secure">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     Secure Checkout
+    <span class="header-guarantee">7-Day Money-Back Guarantee</span>
   </div>
 </header>
 
@@ -553,10 +565,6 @@
 
     <!-- Trust badges -->
     <div class="trust-row">
-      <div class="trust-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        256-bit SSL
-      </div>
       <div class="trust-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Instant access
@@ -668,6 +676,12 @@
         <span class="total-amount" id="total-display">$37</span>
       </div>
 
+      <!-- Guarantee -->
+      <p class="guarantee-line">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        7-Day Money-Back Guarantee
+      </p>
+
       <!-- Pay button -->
       <button type="submit" class="pay-btn" id="pay-btn">
         <svg class="btn-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -690,10 +704,6 @@
 <!-- ── FOOTER ── -->
 <footer class="checkout-footer">
   <p>&copy; 2026 WOD BOD METHOD &bull; <a href="https://www.wodbodmethod.com/privacy-policy" target="_blank">Privacy Policy</a> &bull; <a href="/terms">Terms</a></p>
-  <div class="powered-by">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px;opacity:0.5;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    Secured by <span class="stripe-name">Stripe</span>
-  </div>
 </footer>
 
 <script>
