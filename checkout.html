@@ -812,6 +812,13 @@
     errorDiv.style.display = 'none';
     errorDiv.textContent = '';
   }
+  // Card validation errors render inside the Stripe iframe, well above the pay
+  // button — bring the card field into view so the user can see what's wrong.
+  function scrollToCardField() {
+    if (cardGroup && cardGroup.style.display !== 'none') {
+      cardGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
 
   // ── INIT ELEMENTS (deferred intent — no server call on load) ─────
   elements = stripeLib.elements({
@@ -947,6 +954,7 @@
       const { error: submitError } = await elements.submit();
       if (submitError) {
         showError(submitError.message);
+        scrollToCardField();
         payBtn.disabled = false;
         payBtn.classList.remove('loading');
         return;
@@ -964,6 +972,7 @@
 
       if (tokenError) {
         showError(tokenError.message);
+        scrollToCardField();
         payBtn.disabled = false;
         payBtn.classList.remove('loading');
         return;
