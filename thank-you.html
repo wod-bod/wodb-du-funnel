@@ -256,6 +256,9 @@
   fbq('init', '843330325090694');
   fbq('track', 'PageView');
   (function() {
+    // Fire Purchase at most once per session — refreshes and back/forward
+    // navigation to this page would otherwise re-fire it for the same order.
+    if (sessionStorage.getItem('du_purchase_fired') === 'true') return;
     var p = JSON.parse(sessionStorage.getItem('du_purchase') || '{}');
     var cents = 3700;
     if (p.addSpringLoaded)  cents += 2700;
@@ -264,6 +267,7 @@
     if (p.addedRxBlueprint) cents += 2700;
     if (p.addedUpgrade)     cents += p.subscriptionPlan === 'annual' ? 49700 : 5000;
     fbq('track', 'Purchase', { value: parseFloat((cents / 100).toFixed(2)), currency: 'USD' });
+    sessionStorage.setItem('du_purchase_fired', 'true');
   })();
   </script>
   <noscript><img height="1" width="1" style="display:none"
