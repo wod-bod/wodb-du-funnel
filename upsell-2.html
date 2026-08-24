@@ -357,6 +357,15 @@
   src="https://www.facebook.com/tr?id=843330325090694&ev=PageView&noscript=1"
   /></noscript>
   <!-- End Meta Pixel Code -->
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TRFQZ40N3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TRFQZ40N3Q');
+  </script>
+  <!-- End Google Analytics 4 -->
   <script type="text/javascript">
       (function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -581,6 +590,7 @@
       purchase.addedUpgrade    = true;
       purchase.subscriptionPlan = selectedPlan;
       sessionStorage.setItem('du_purchase', JSON.stringify(purchase));
+      gtag('event', 'upsell_membership', { value: selectedPlan === 'annual' ? 497.00 : 50.00, currency: 'USD' });
       window.location.href = '/thank-you';
     } catch (err) {
       showError('There was an issue starting your membership: ' + err.message + '. Please contact support@wodbodmethod.com if this persists.');

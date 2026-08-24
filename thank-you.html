@@ -274,6 +274,32 @@
   src="https://www.facebook.com/tr?id=843330325090694&ev=PageView&noscript=1"
   /></noscript>
   <!-- End Meta Pixel Code -->
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TRFQZ40N3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TRFQZ40N3Q');
+    (function() {
+      // Independent of the Meta guard — GA4 must fire once per session too.
+      if (sessionStorage.getItem('google_purchase_fired') === 'true') return;
+      var p = JSON.parse(sessionStorage.getItem('du_purchase') || '{}');
+      var cents = 3700;
+      if (p.addSpringLoaded)  cents += 2700;
+      if (p.addTracker)       cents += 700;
+      if (p.addedDiagnostic)  cents += 6700;
+      if (p.addedRxBlueprint) cents += 2700;
+      if (p.addedUpgrade)     cents += p.subscriptionPlan === 'annual' ? 49700 : 5000;
+      gtag('event', 'purchase', {
+        transaction_id: Date.now().toString(),
+        value: parseFloat((cents / 100).toFixed(2)),
+        currency: 'USD'
+      });
+      sessionStorage.setItem('google_purchase_fired', 'true');
+    })();
+  </script>
+  <!-- End Google Analytics 4 -->
   <script type="text/javascript">
       (function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
