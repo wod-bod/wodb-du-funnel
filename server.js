@@ -262,7 +262,20 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 });
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+
+// ── PUBLIC FILES ─────────────────────────────────────
+// Only the funnel pages and their images are served as files. Everything else in
+// this folder (server.js, package files, logs) stays private.
+const PUBLIC_FILES = new Set([
+  'index.html', 'index-v2.html', 'checkout.html', 'upsell-1.html', 'upsell-2.html',
+  'downsell.html', 'thank-you.html', 'subscription-portal.html', 'terms.html',
+  '6 wk DU Fix.png', 'DU Course Product MockUp-2.png',
+]);
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/:file', (req, res, next) => {
+  if (!PUBLIC_FILES.has(req.params.file)) return next();
+  res.sendFile(path.join(__dirname, req.params.file));
+});
 
 // ── ONE-TIME PRICES (cents) ──────────────────────────
 const PRICES = {
