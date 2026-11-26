@@ -930,6 +930,21 @@
     @media (max-width: 900px) {
       nav, nav.scrolled { padding: 16px 20px; }
       #hero { padding: 110px 20px 70px; }
+      /* Keep the CTA above the fold on phones: the product mockup sat between
+         the headline and the subhead and pushed the button ~86px below it.
+         Reorder so the mockup follows the CTA block instead. */
+      .hero-content { display: flex; flex-direction: column; align-items: center; }
+      .hero-content > .overline-pill { order: 1; }
+      .hero-content > .hero-headline { order: 2; margin-bottom: 18px; }
+      .hero-content > img            { order: 3; margin: 0 auto 20px; max-width: 420px; }
+      .hero-content > .hero-cta-wrap { order: 4; width: 100%; }
+      /* Inside the CTA block, the button leads and the subhead follows it */
+      .hero-cta-wrap { display: flex; flex-direction: column; }
+      .hero-cta-wrap > .btn-primary     { order: 1; }
+      .hero-cta-wrap > .hero-sub        { order: 2; margin: 20px 0 0; }
+      .hero-cta-wrap > .hero-video-wrap { order: 3; }
+      .hero-cta-wrap > .social-proof    { order: 4; }
+      .hero-cta-wrap > .bf-deadline     { order: 5; }
       #problem, #comparison, #story, #stats, #included, #testimonials, #bonus, #final-cta, #faq { padding-left: 20px; padding-right: 20px; }
       .comparison-grid { grid-template-columns: 1fr; gap: 0; }
       .comp-vs { display: none; }
@@ -1009,7 +1024,7 @@
   <div class="hero-lines"></div>
   <div class="hero-content">
 
-    <div class="overline-pill">Black Friday Weekend &middot; Ends 12/1</div>
+    <div class="overline-pill">Black Friday Special &middot; Ends 12/1</div>
 
     <h1 class="hero-headline" id="hero-headline" aria-label="Stop Tripping. Start Flying. Master Double Unders.">
       <!-- populated by JS -->
@@ -1017,12 +1032,12 @@
 
     <img src="DU Course Product MockUp-2.png" alt="6-Week Double Under Fix program preview" style="width:100%;max-width:540px;margin:18px auto;display:block;">
 
-    <p class="hero-sub">
-      The exact 5-step system that took Spencer from <strong>constantly tripping</strong> to <strong>353 unbroken reps</strong>&nbsp;&mdash;
-      now packaged into a complete step-by-step program you can go through at your own pace.
-    </p>
-
     <div class="hero-cta-wrap">
+      <p class="hero-sub">
+        The exact 5-step system that took Spencer from <strong>constantly tripping</strong> to <strong>353 unbroken reps</strong>&nbsp;&mdash;
+        now packaged into a complete step-by-step program you can go through at your own pace.
+      </p>
+
       <a href="/checkout" class="btn-primary">
         <svg width="36" height="36" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFFFFF"/><path d="M9 15L15 9M15 9H10M15 9V14" stroke="#111111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
         Yes! Fix My Double Unders [$37]
